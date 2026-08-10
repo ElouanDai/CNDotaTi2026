@@ -14,8 +14,8 @@
       "format": "Bo3",
       "team_a": "Xtreme Gaming",
       "team_b": "Team Falcons",
-      "odds_a": 1.85,
-      "odds_b": 1.95,
+      "odds_a": null,
+      "odds_b": null,
       "bookmaker": "optional",
       "notes": "optional"
     }
@@ -24,6 +24,20 @@
 ```
 
 Use decimal odds. Team names can use aliases from `data/teams.json`; Codex should normalize aliases before judging Chinese-team status.
+
+Use `null` odds for published matches whose bookmaker odds have not been entered yet.
+
+## `data/team_profiles.json`
+
+Stores the team-info database used by the homepage. Keep analysis focused on style and decision support:
+
+- BP identity and hero-pool tendencies
+- laning strength and early-map pressure
+- macro, objective control, and tempo
+- teamfight pattern and comeback risk
+- pressure points and hedge notes
+
+Do not use this file as a duplicate schedule or roster table.
 
 ## `data/state.json`
 

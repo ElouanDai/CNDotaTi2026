@@ -18,7 +18,8 @@ The frontend supports:
 - suggested hedge bet amount and side
 - manual bet recording
 - settlement and bankroll tracking
-- editable team strength and China-team markers
+- team style database with BP, hero pool, laning, macro, teamfight, pressure, and hedge notes
+- editable team strength and China-team markers for the local model
 - JSON export/import for browser-local state
 
 Browser app data is stored in `localStorage` for the current browser.
@@ -31,10 +32,11 @@ Future command-line betting advice should be based on these local files:
 - `data/current_schedule.json`: current upcoming schedule and odds
 - `data/teams.json`: team identities, aliases, rosters, and baseline strength
 - `data/players.json`: generated player index
+- `data/team_profiles.json`: style-analysis database for the frontend and command-line advice
 - `data/bet_log.json`: bets actually placed by the user and settlements
 - `data/daily/*.json`: optional per-day schedule files
 
-Update `data/current_schedule.json` before asking Codex for a recommendation.
+Update `data/current_schedule.json` before asking Codex for a recommendation. When asking Codex to refresh upcoming matches, it should check the Dota 2 CN TI2026 site first, then Liquipedia, normalize times to Asia/Shanghai, and preserve any odds already entered locally.
 
 ## Validation
 

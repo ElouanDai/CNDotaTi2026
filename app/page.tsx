@@ -2,6 +2,8 @@
 
 import type { ChangeEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
+import currentScheduleData from "@/data/current_schedule.json";
+import teamProfilesData from "@/data/team_profiles.json";
 
 type RiskLevel = "conservative" | "standard" | "active";
 type MatchStatus = "scheduled" | "settled" | "void";
@@ -16,8 +18,28 @@ type AppState = { initialBankroll: number; risk: RiskLevel; selectedDate: string
 type Recommendation = { action: "bet" | "skip"; priority: "高" | "中" | "低" | "跳过"; side?: BetSide; team?: string; odds?: number; stake: number; rationale: string; modelProbability?: number; marketProbability?: number; edge?: number; strategy?: BetStrategy };
 type MatchDraft = { date: string; time: string; stage: string; teamA: string; teamB: string; oddsA: string; oddsB: string; note: string };
 type ManualDraft = { side: BetSide; stake: string };
+type ScheduleMatchInput = { id: string; date: string; time: string; stage: string; format?: string; team_a: string; team_b: string; odds_a: number | null; odds_b: number | null; status?: string; notes?: string };
+type TeamProfile = {
+  team_id: string;
+  team_name: string;
+  short_name: string;
+  region: string;
+  is_chinese_team: boolean;
+  logo_path: string;
+  style_tags: string[];
+  bp_identity: string;
+  hero_pool: string;
+  laning: string;
+  tempo: string;
+  teamfight: string;
+  pressure_points: string;
+  hedge_note: string;
+  confidence: "low" | "medium" | "high";
+};
 
 const STORAGE_KEY = "ti2026-betting-assistant-v1";
+const EVENT_START_DATE = "2026-08-13";
+const LEGACY_PRE_EVENT_DATE = "2026-08-12";
 const INITIAL_BANKROLL = 981.42;
 const RISK_CONFIG: Record<RiskLevel, { label: string; multiplier: number; dailyCap: number; description: string }> = {
   conservative: { label: "保守", multiplier: 0.72, dailyCap: 0.1, description: "保留资金，单日建议不超过 10%" },
@@ -25,7 +47,6 @@ const RISK_CONFIG: Record<RiskLevel, { label: string; multiplier: number; dailyC
   active: { label: "积极", multiplier: 1.32, dailyCap: 0.2, description: "加大强队对冲，单日建议不超过 20%" },
 };
 const TOURNAMENT_DAYS = [
-  { date: "2026-08-12", label: "赔率准备", stage: "赛前录入" },
   { date: "2026-08-13", label: "瑞士轮 D1", stage: "小组赛" },
   { date: "2026-08-14", label: "瑞士轮 D2", stage: "小组赛" },
   { date: "2026-08-15", label: "瑞士轮 D3", stage: "小组赛" },
@@ -37,8 +58,8 @@ const TOURNAMENT_DAYS = [
 ];
 const DEFAULT_TEAMS: Team[] = [
   { id: "team-yandex", name: "Team Yandex", region: "EEU", china: false, strength: 92, seed: "Invite" },
-  { id: "onew-team", name: "1w Team", region: "EEU", china: false, strength: 91, seed: "Invite" },
-  { id: "boomboys", name: "BetBoom Team", region: "EEU", china: false, strength: 90, seed: "Invite" },
+  { id: "onew-team", name: "Iron Wing", region: "EEU", china: false, strength: 91, seed: "Invite" },
+  { id: "boomboys", name: "BoomBoys", region: "EEU", china: false, strength: 90, seed: "Invite" },
   { id: "team-falcons", name: "Team Falcons", region: "MESWA", china: false, strength: 89, seed: "Invite" },
   { id: "team-liquid", name: "Team Liquid", region: "WEU", china: false, strength: 88, seed: "Invite" },
   { id: "xtreme-gaming", name: "Xtreme Gaming", region: "China", china: true, strength: 88, seed: "Invite" },
@@ -53,9 +74,29 @@ const DEFAULT_TEAMS: Team[] = [
   { id: "gamerlegion", name: "GamerLegion", region: "North America", china: false, strength: 72, seed: "Qualifier" },
   { id: "huligani", name: "HULIGANI", region: "Europe", china: false, strength: 70, seed: "Qualifier" },
 ];
-const DEFAULT_STATE: AppState = { initialBankroll: INITIAL_BANKROLL, risk: "standard", selectedDate: "2026-08-12", teams: DEFAULT_TEAMS, matches: [], bets: [] };
-const EMPTY_MATCH: MatchDraft = { date: "2026-08-12", time: "12:00", stage: "瑞士轮", teamA: "Xtreme Gaming", teamB: "Team Falcons", oddsA: "", oddsB: "", note: "" };
+const TEAM_PROFILES = teamProfilesData.profiles as TeamProfile[];
+const DEFAULT_MATCHES: Match[] = ((currentScheduleData.matches ?? []) as ScheduleMatchInput[]).map((match) => ({
+  id: match.id,
+  date: match.date,
+  time: match.time,
+  stage: match.stage,
+  teamA: canonicalTeamName(match.team_a),
+  teamB: canonicalTeamName(match.team_b),
+  oddsA: coercePositiveNumber(match.odds_a ?? 0),
+  oddsB: coercePositiveNumber(match.odds_b ?? 0),
+  status: coerceMatchStatus(match.status),
+  note: match.notes ?? match.format ?? "",
+}));
+const DEFAULT_STATE: AppState = { initialBankroll: INITIAL_BANKROLL, risk: "standard", selectedDate: EVENT_START_DATE, teams: DEFAULT_TEAMS, matches: DEFAULT_MATCHES, bets: [] };
+const EMPTY_MATCH: MatchDraft = { date: EVENT_START_DATE, time: "10:00", stage: "瑞士轮 R1", teamA: "Xtreme Gaming", teamB: "Team Spirit", oddsA: "", oddsB: "", note: "" };
 
+function canonicalTeamName(name: string) {
+  const normalized = name.trim().toLowerCase();
+  if (["1w team", "1win team", "iron wing"].includes(normalized)) return "Iron Wing";
+  if (["betboom team", "bb team", "bb", "boomboys"].includes(normalized)) return "BoomBoys";
+  return name.trim();
+}
+function coerceMatchStatus(status?: string): MatchStatus { return status === "settled" || status === "void" ? status : "scheduled"; }
 function roundMoney(value: number) { return Math.round((Number.isFinite(value) ? value : 0) * 100) / 100; }
 function money(value: number) { return new Intl.NumberFormat("zh-CN", { style: "currency", currency: "CNY", maximumFractionDigits: 2 }).format(roundMoney(value)); }
 function pct(value?: number) { return value === undefined || !Number.isFinite(value) ? "-" : `${Math.round(value * 100)}%`; }
@@ -63,7 +104,26 @@ function makeId(prefix: string) { const randomPart = globalThis.crypto?.randomUU
 function normalizeName(name: string) { return name.trim().toLowerCase(); }
 function normalizeDateInput(value: string) { const trimmed = value.trim(); if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed; const match = trimmed.match(/^(\d{1,2})[/-](\d{1,2})$/); if (!match) return trimmed; return `2026-${match[1].padStart(2, "0")}-${match[2].padStart(2, "0")}`; }
 function coercePositiveNumber(value: string | number) { const parsed = typeof value === "number" ? value : Number(value); return Number.isFinite(parsed) && parsed > 0 ? parsed : 0; }
-function getTeam(state: AppState, name: string): Team { const existing = state.teams.find((team) => normalizeName(team.name) === normalizeName(name)); if (existing) return existing; const china = ["xtreme", "vici", "resilience"].some((keyword) => normalizeName(name).includes(keyword)); return { id: `custom-${normalizeName(name).replace(/[^a-z0-9]+/g, "-")}`, name: name.trim() || "未命名战队", region: china ? "China" : "Unknown", china, strength: china ? 72 : 70, seed: "Custom" }; }
+function matchScheduleKey(match: Pick<Match, "date" | "time" | "teamA" | "teamB">) { return [match.date, match.time, canonicalTeamName(match.teamA), canonicalTeamName(match.teamB)].map(normalizeName).join("|"); }
+function normalizeTeamRecord(team: Team): Team {
+  if (team.id === "onew-team" || ["1w team", "1win team"].includes(normalizeName(team.name))) return { ...team, name: "Iron Wing" };
+  if (team.id === "boomboys" || ["betboom team", "bb team", "bb"].includes(normalizeName(team.name))) return { ...team, name: "BoomBoys" };
+  return team;
+}
+function normalizeMatchRecord(match: Match): Match { return { ...match, teamA: canonicalTeamName(match.teamA), teamB: canonicalTeamName(match.teamB), status: coerceMatchStatus(match.status) }; }
+function mergeDefaultMatches(savedMatches: Match[]) {
+  const normalized = savedMatches.filter((match) => match.date !== LEGACY_PRE_EVENT_DATE).map(normalizeMatchRecord);
+  const existingKeys = new Set(normalized.map(matchScheduleKey));
+  const missingDefaults = DEFAULT_MATCHES.filter((match) => !existingKeys.has(matchScheduleKey(match)));
+  return [...missingDefaults, ...normalized].sort(sortMatches);
+}
+function hydrateState(input?: Partial<AppState>): AppState {
+  const teams = Array.isArray(input?.teams) && input.teams.length > 0 ? input.teams.map(normalizeTeamRecord) : DEFAULT_TEAMS;
+  const matches = mergeDefaultMatches(Array.isArray(input?.matches) ? input.matches : []);
+  const selectedDate = input?.selectedDate && input.selectedDate !== LEGACY_PRE_EVENT_DATE ? input.selectedDate : EVENT_START_DATE;
+  return { ...DEFAULT_STATE, ...input, selectedDate, teams, matches, bets: Array.isArray(input?.bets) ? input.bets : [] };
+}
+function getTeam(state: AppState, name: string): Team { const canonicalName = canonicalTeamName(name); const existing = state.teams.find((team) => normalizeName(team.name) === normalizeName(canonicalName)); if (existing) return existing; const china = ["xtreme", "vici", "resilience"].some((keyword) => normalizeName(canonicalName).includes(keyword)); return { id: `custom-${normalizeName(canonicalName).replace(/[^a-z0-9]+/g, "-")}`, name: canonicalName.trim() || "未命名战队", region: china ? "China" : "Unknown", china, strength: china ? 72 : 70, seed: "Custom" }; }
 function logisticProbability(diff: number) { const raw = 1 / (1 + Math.exp(-diff / 10)); return Math.min(0.92, Math.max(0.08, raw)); }
 function impliedProbability(oddsA: number, oddsB: number) { if (oddsA <= 1 || oddsB <= 1) return { A: 0.5, B: 0.5 }; const invA = 1 / oddsA; const invB = 1 / oddsB; const total = invA + invB; return { A: invA / total, B: invB / total }; }
 function calculateMetrics(state: AppState) { const settled = state.bets.reduce((sum, bet) => { if (bet.status === "won") return sum + bet.stake * (bet.odds - 1); if (bet.status === "lost") return sum - bet.stake; return sum; }, 0); const pending = state.bets.reduce((sum, bet) => (bet.status === "open" ? sum + bet.stake : sum), 0); const bankroll = roundMoney(state.initialBankroll + settled); return { bankroll, available: roundMoney(bankroll - pending), pending: roundMoney(pending), settled: roundMoney(settled), won: state.bets.filter((bet) => bet.status === "won").length, lost: state.bets.filter((bet) => bet.status === "lost").length }; }
@@ -145,6 +205,7 @@ function parseImportLine(line: string, selectedDate: string): MatchDraft | null 
   if (!trimmed) return null;
   const pipeParts = trimmed.split(/[|\t，]/).map((part) => part.trim()).filter(Boolean);
   if (pipeParts.length >= 7) return { date: normalizeDateInput(pipeParts[0]), time: pipeParts[1], stage: pipeParts[2], teamA: pipeParts[3], teamB: pipeParts[4], oddsA: pipeParts[5], oddsB: pipeParts[6], note: pipeParts.slice(7).join(" ") };
+  if (pipeParts.length >= 5) return { date: normalizeDateInput(pipeParts[0]), time: pipeParts[1], stage: pipeParts[2], teamA: pipeParts[3], teamB: pipeParts[4], oddsA: "", oddsB: "", note: pipeParts.slice(5).join(" ") };
   const regex = /^(?:(\d{4}-\d{2}-\d{2}|\d{1,2}[/-]\d{1,2})\s+)?(?:(\d{1,2}:\d{2})\s+)?(.+?)\s+(?:vs|VS|对阵)\s+(.+?)\s+([0-9]+(?:\.[0-9]+)?)\s+([0-9]+(?:\.[0-9]+)?)$/;
   const match = trimmed.match(regex);
   if (!match) return null;
@@ -164,6 +225,28 @@ function teamInitials(name: string) {
   const initials = name.split(/\s+/).filter(Boolean).map((part) => part[0]).join("");
   return (initials || name.slice(0, 2)).slice(0, 3).toUpperCase();
 }
+function getTeamProfile(team: Team): TeamProfile {
+  const profile = TEAM_PROFILES.find((item) => item.team_id === team.id || normalizeName(item.team_name) === normalizeName(team.name));
+  if (profile) return profile;
+  return {
+    team_id: team.id,
+    team_name: team.name,
+    short_name: teamInitials(team.name),
+    region: team.region,
+    is_chinese_team: team.china,
+    logo_path: "",
+    style_tags: ["待更新", team.china ? "中国队" : "自定义"],
+    bp_identity: "暂无稳定样本，后续需要根据最新 BP 和比赛录像补充。",
+    hero_pool: "待从近期比赛和公开统计中更新。",
+    laning: "待观察对线强度、分路和前 10 分钟经济差。",
+    tempo: "待观察中期控图、肉山和推进节奏。",
+    teamfight: "待观察正面团、反手和买活处理。",
+    pressure_points: "资料不足时降低投注权重。",
+    hedge_note: team.china ? "按中国队规则处理，但建议先补充资料。" : "资料不足，不作为外战主动下注依据。",
+    confidence: "low",
+  };
+}
+function confidenceLabel(confidence: TeamProfile["confidence"]) { return { low: "低样本", medium: "中等", high: "高" }[confidence]; }
 
 export default function Home() {
   const [state, setState] = useState<AppState>(DEFAULT_STATE);
@@ -171,7 +254,6 @@ export default function Home() {
   const [matchDraft, setMatchDraft] = useState<MatchDraft>(EMPTY_MATCH);
   const [bulkText, setBulkText] = useState("");
   const [manualDrafts, setManualDrafts] = useState<Record<string, ManualDraft>>({});
-  const [newTeam, setNewTeam] = useState({ name: "", region: "", strength: 70, china: false });
 
   useEffect(() => {
     let cancelled = false;
@@ -181,7 +263,7 @@ export default function Home() {
       if (saved) {
         try {
           const parsed = JSON.parse(saved) as AppState;
-          setState({ ...DEFAULT_STATE, ...parsed });
+          setState(hydrateState(parsed));
         } catch {
           setState(DEFAULT_STATE);
         }
@@ -206,9 +288,9 @@ export default function Home() {
   const xgInPlay = dayMatches.some((match) => [match.teamA, match.teamB].some((team) => normalizeName(team).includes("xtreme")));
 
   function updateState(updater: (current: AppState) => AppState) { setState((current) => updater(current)); }
-  function addMatchFromDraft(draft: MatchDraft) { const oddsA = coercePositiveNumber(draft.oddsA); const oddsB = coercePositiveNumber(draft.oddsB); if (!draft.teamA.trim() || !draft.teamB.trim() || oddsA <= 1 || oddsB <= 1) return false; const match: Match = { id: makeId("match"), date: normalizeDateInput(draft.date || state.selectedDate), time: draft.time.trim() || "待定", stage: draft.stage.trim() || "赛程", teamA: draft.teamA.trim(), teamB: draft.teamB.trim(), oddsA, oddsB, status: "scheduled", note: draft.note.trim() }; updateState((current) => ({ ...current, selectedDate: match.date, matches: [...current.matches, match].sort(sortMatches) })); return true; }
+  function addMatchFromDraft(draft: MatchDraft) { const oddsA = coercePositiveNumber(draft.oddsA); const oddsB = coercePositiveNumber(draft.oddsB); if (!draft.teamA.trim() || !draft.teamB.trim()) return false; const match: Match = { id: makeId("match"), date: normalizeDateInput(draft.date || state.selectedDate), time: draft.time.trim() || "待定", stage: draft.stage.trim() || "赛程", teamA: canonicalTeamName(draft.teamA), teamB: canonicalTeamName(draft.teamB), oddsA, oddsB, status: "scheduled", note: draft.note.trim() }; updateState((current) => ({ ...current, selectedDate: match.date, matches: [...current.matches, match].sort(sortMatches) })); return true; }
   function handleAddMatch() { if (addMatchFromDraft(matchDraft)) setMatchDraft({ ...EMPTY_MATCH, date: normalizeDateInput(matchDraft.date || state.selectedDate) }); }
-  function handleBulkImport() { const drafts = bulkText.split(/\r?\n/).map((line) => parseImportLine(line, state.selectedDate)).filter((draft): draft is MatchDraft => Boolean(draft)); const matches: Match[] = drafts.map((draft) => ({ id: makeId("match"), date: normalizeDateInput(draft.date || state.selectedDate), time: draft.time.trim() || "待定", stage: draft.stage.trim() || "赛程", teamA: draft.teamA.trim(), teamB: draft.teamB.trim(), oddsA: coercePositiveNumber(draft.oddsA), oddsB: coercePositiveNumber(draft.oddsB), status: "scheduled" as MatchStatus, note: draft.note.trim() })).filter((match) => match.teamA && match.teamB && match.oddsA > 1 && match.oddsB > 1); if (matches.length === 0) return; updateState((current) => ({ ...current, selectedDate: matches[0]?.date ?? current.selectedDate, matches: [...current.matches, ...matches].sort(sortMatches) })); setBulkText(""); }
+  function handleBulkImport() { const drafts = bulkText.split(/\r?\n/).map((line) => parseImportLine(line, state.selectedDate)).filter((draft): draft is MatchDraft => Boolean(draft)); const matches: Match[] = drafts.map((draft) => ({ id: makeId("match"), date: normalizeDateInput(draft.date || state.selectedDate), time: draft.time.trim() || "待定", stage: draft.stage.trim() || "赛程", teamA: canonicalTeamName(draft.teamA), teamB: canonicalTeamName(draft.teamB), oddsA: coercePositiveNumber(draft.oddsA), oddsB: coercePositiveNumber(draft.oddsB), status: "scheduled" as MatchStatus, note: draft.note.trim() })).filter((match) => match.teamA && match.teamB); if (matches.length === 0) return; updateState((current) => ({ ...current, selectedDate: matches[0]?.date ?? current.selectedDate, matches: [...current.matches, ...matches].sort(sortMatches) })); setBulkText(""); }
   function updateMatch(matchId: string, patch: Partial<Match>) { updateState((current) => ({ ...current, matches: current.matches.map((match) => match.id === matchId ? { ...match, ...patch } : match) })); }
   function removeMatch(matchId: string) { if (!confirm("删除这场比赛和关联投注？")) return; updateState((current) => ({ ...current, matches: current.matches.filter((match) => match.id !== matchId), bets: current.bets.filter((bet) => bet.matchId !== matchId) })); }
   function addBet(match: Match, side: BetSide, stake: number, strategy: BetStrategy, note = "") { const odds = side === "A" ? match.oddsA : match.oddsB; const team = side === "A" ? match.teamA : match.teamB; if (stake <= 0 || odds <= 1 || metrics.available < stake) return; const bet: Bet = { id: makeId("bet"), matchId: match.id, side, team, odds, stake: roundMoney(stake), status: "open", strategy, createdAt: new Date().toISOString(), note }; updateState((current) => ({ ...current, bets: [bet, ...current.bets] })); }
@@ -218,9 +300,8 @@ export default function Home() {
   function reopenMatch(matchId: string) { updateState((current) => ({ ...current, matches: current.matches.map((match) => match.id === matchId ? { ...match, status: "scheduled", winner: undefined } : match), bets: current.bets.map((bet) => bet.matchId === matchId ? { ...bet, status: "open" } : bet) })); }
   function removeBet(betId: string) { if (!confirm("删除这笔投注？")) return; updateState((current) => ({ ...current, bets: current.bets.filter((bet) => bet.id !== betId) })); }
   function updateTeam(teamId: string, patch: Partial<Team>) { updateState((current) => ({ ...current, teams: current.teams.map((team) => team.id === teamId ? { ...team, ...patch } : team) })); }
-  function addCustomTeam() { const name = newTeam.name.trim(); if (!name) return; updateState((current) => current.teams.some((team) => normalizeName(team.name) === normalizeName(name)) ? current : { ...current, teams: [...current.teams, { id: makeId("team"), name, region: newTeam.region.trim() || "Custom", strength: newTeam.strength, china: newTeam.china, seed: "Custom" }] }); setNewTeam({ name: "", region: "", strength: 70, china: false }); }
   function exportBackup() { const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" }); const url = URL.createObjectURL(blob); const anchor = document.createElement("a"); anchor.href = url; anchor.download = `ti2026-betting-backup-${state.selectedDate}.json`; anchor.click(); URL.revokeObjectURL(url); }
-  function importBackup(event: ChangeEvent<HTMLInputElement>) { const file = event.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { try { const imported = JSON.parse(String(reader.result)) as AppState; if (!Array.isArray(imported.teams) || !Array.isArray(imported.matches) || !Array.isArray(imported.bets)) return; setState({ ...DEFAULT_STATE, ...imported }); } catch { return; } }; reader.readAsText(file); event.target.value = ""; }
+  function importBackup(event: ChangeEvent<HTMLInputElement>) { const file = event.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { try { const imported = JSON.parse(String(reader.result)) as AppState; if (!Array.isArray(imported.teams) || !Array.isArray(imported.matches) || !Array.isArray(imported.bets)) return; setState(hydrateState(imported)); } catch { return; } }; reader.readAsText(file); event.target.value = ""; }
   function resetAll() { if (!confirm("清空本地数据并恢复初始资金？")) return; setState(DEFAULT_STATE); setMatchDraft(EMPTY_MATCH); setBulkText(""); setManualDrafts({}); }
 
   return (
@@ -332,8 +413,8 @@ export default function Home() {
                     </div>
                     {match.note ? <p className="match-note">{match.note}</p> : null}
                     <div className="odds-grid">
-                      <label><span>A 赔率</span><input type="number" min="1.01" step="0.01" value={match.oddsA} onChange={(event) => updateMatch(match.id, { oddsA: coercePositiveNumber(event.target.value) })} /></label>
-                      <label><span>B 赔率</span><input type="number" min="1.01" step="0.01" value={match.oddsB} onChange={(event) => updateMatch(match.id, { oddsB: coercePositiveNumber(event.target.value) })} /></label>
+                      <label><span>A 赔率</span><input type="number" min="1.01" step="0.01" value={match.oddsA > 0 ? match.oddsA : ""} onChange={(event) => updateMatch(match.id, { oddsA: coercePositiveNumber(event.target.value) })} /></label>
+                      <label><span>B 赔率</span><input type="number" min="1.01" step="0.01" value={match.oddsB > 0 ? match.oddsB : ""} onChange={(event) => updateMatch(match.id, { oddsB: coercePositiveNumber(event.target.value) })} /></label>
                     </div>
                   </div>
                   <div className="recommendation-box">
@@ -391,18 +472,43 @@ export default function Home() {
         </aside>
       </section>
 
-      <section className="team-section">
-        <div className="section-heading team-heading"><div><p className="eyebrow">Editable model</p><h2>战队评级 / CN Watch</h2></div><p className="muted">强度越高，模型越倾向该队；中国队和 XG 会影响对冲方向与视觉优先级。</p></div>
-        <div className="team-grid">
-          {state.teams.map((team) => <div className={`team-row ${team.china ? "china-team-row" : ""} ${normalizeName(team.name).includes("xtreme") ? "xg-team-row" : ""}`} key={team.id}><div className="team-identity"><span className="mini-crest">{teamInitials(team.name)}</span><div><strong>{team.name}</strong><span>{team.region} · {team.seed}</span></div></div><label className="toggle-line"><input type="checkbox" checked={team.china} onChange={(event) => updateTeam(team.id, { china: event.target.checked })} />中国队</label><label className="strength-line"><span>{team.strength}</span><input type="range" min="45" max="95" value={team.strength} onChange={(event) => updateTeam(team.id, { strength: Number(event.target.value) })} /></label></div>)}
+      <section className="team-section team-database">
+        <div className="section-heading team-heading">
+          <div><p className="eyebrow">Realtime team intelligence</p><h2>战队风格资料库</h2></div>
+          <p className="muted">资料来自本地 `data/team_profiles.json`，后续可按 BP、对线、运营、团战样本持续更新。</p>
         </div>
-        <div className="add-team-row">
-
-          <input placeholder="新战队" value={newTeam.name} onChange={(event) => setNewTeam((draft) => ({ ...draft, name: event.target.value }))} />
-          <input placeholder="赛区" value={newTeam.region} onChange={(event) => setNewTeam((draft) => ({ ...draft, region: event.target.value }))} />
-          <label><span>{newTeam.strength}</span><input type="range" min="45" max="95" value={newTeam.strength} onChange={(event) => setNewTeam((draft) => ({ ...draft, strength: Number(event.target.value) }))} /></label>
-          <label className="toggle-line"><input type="checkbox" checked={newTeam.china} onChange={(event) => setNewTeam((draft) => ({ ...draft, china: event.target.checked }))} />中国队</label>
-          <button type="button" className="secondary" onClick={addCustomTeam}>添加战队</button>
+        <div className="profile-grid">
+          {state.teams.map((team) => {
+            const profile = getTeamProfile(team);
+            const isXgProfile = normalizeName(team.name).includes("xtreme");
+            return (
+              <article className={`profile-card ${team.china ? "china-profile" : ""} ${isXgProfile ? "xg-profile" : ""}`} key={team.id}>
+                <div className="profile-header">
+                  <div className="profile-logo-frame">{profile.logo_path ? <span className="profile-logo-image" style={{ backgroundImage: `url(${profile.logo_path})` }} aria-label={`${team.name} logo`} role="img" /> : <span>{profile.short_name}</span>}</div>
+                  <div className="profile-title">
+                    <p className="eyebrow">{team.china ? "CN TEAM" : profile.region}</p>
+                    <h3>{team.name}</h3>
+                    <span>{team.region} · {team.seed} · 模型 {team.strength}</span>
+                  </div>
+                  <span className={`confidence-pill confidence-${profile.confidence}`}>{confidenceLabel(profile.confidence)}</span>
+                </div>
+                <div className="style-tags">{profile.style_tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
+                <div className="profile-axis">
+                  <div><span>BP</span><p>{profile.bp_identity}</p></div>
+                  <div><span>英雄池</span><p>{profile.hero_pool}</p></div>
+                  <div><span>对线</span><p>{profile.laning}</p></div>
+                  <div><span>运营</span><p>{profile.tempo}</p></div>
+                  <div><span>团战</span><p>{profile.teamfight}</p></div>
+                  <div><span>风险点</span><p>{profile.pressure_points}</p></div>
+                </div>
+                <div className="profile-hedge"><span>对冲备注</span><p>{profile.hedge_note}</p></div>
+                <div className="profile-controls">
+                  <label className="toggle-line"><input type="checkbox" checked={team.china} onChange={(event) => updateTeam(team.id, { china: event.target.checked })} />中国队</label>
+                  <label className="strength-line profile-strength"><span>{team.strength}</span><input type="range" min="45" max="95" value={team.strength} onChange={(event) => updateTeam(team.id, { strength: Number(event.target.value) })} /></label>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </section>
     </main>

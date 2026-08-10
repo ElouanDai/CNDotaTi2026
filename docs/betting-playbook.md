@@ -13,8 +13,10 @@ Before giving any betting recommendation, read these local files:
 1. `data/state.json`
 2. `data/current_schedule.json`
 3. `data/teams.json`
-4. `data/bet_log.json`
-5. The newest matching `data/daily/*.json`, if the user mentions a date or says they updated a daily file.
+4. `data/players.json`
+5. `data/team_profiles.json`
+6. `data/bet_log.json`
+7. The newest matching `data/daily/*.json`, if the user mentions a date or says they updated a daily file.
 
 If the files are missing, malformed, or stale compared with the user's message, state the issue and base the recommendation on the newest user-provided data.
 
