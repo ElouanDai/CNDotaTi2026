@@ -29,6 +29,7 @@ If the files are missing, malformed, or stale compared with the user's message, 
 - Reduce stake when the Chinese team is stronger; skip when the opponent is weak and odds are not attractive.
 - If both teams are Chinese, either skip or make a very small bet on the clearly stronger side.
 - If both teams are non-Chinese, bet only when the edge is clear enough to help maintain bankroll.
+- All recommended and logged stake amounts must be whole CNY integers. Floor calculated stakes instead of rounding up near bankroll caps.
 - Never suggest all-in, martingale, chasing losses, or betting more than the caps in `data/state.json`.
 
 ## Recommendation output
@@ -36,7 +37,7 @@ If the files are missing, malformed, or stale compared with the user's message, 
 For each match, provide:
 
 - Decision: bet or skip.
-- Side/team and stake in CNY.
+- Side/team and stake as a whole CNY integer.
 - Odds used.
 - Why this fits the hedge objective.
 - Risk note: high/medium/low.

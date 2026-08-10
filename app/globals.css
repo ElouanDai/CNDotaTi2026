@@ -357,8 +357,25 @@ button:hover, .file-button:hover { transform: translateY(-1px); border-color: rg
 .settle-row { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
 .settle-row button { min-height: 34px; padding: 7px 10px; }
 .bet-lines { margin-top: 12px; border-top: 1px solid rgba(215,166,74,0.2); }
-.bet-line { display: grid; grid-template-columns: 82px minmax(0, 1fr) 110px 58px 44px; gap: 8px; align-items: center; min-height: 38px; border-bottom: 1px solid rgba(215,166,74,0.14); font-size: 12px; color: var(--muted); }
-.bet-line strong { overflow-wrap: anywhere; color: #fff3d8; }
+.bet-line {
+  display: grid;
+  grid-template-columns: 78px minmax(118px, 1fr) auto;
+  grid-template-areas:
+    "strategy team action"
+    "stake stake status";
+  gap: 4px 8px;
+  align-items: center;
+  min-height: 54px;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(215,166,74,0.14);
+  font-size: 12px;
+  color: var(--muted);
+}
+.bet-line > span:first-child { grid-area: strategy; }
+.bet-line strong { grid-area: team; min-width: 0; overflow-wrap: anywhere; color: #fff3d8; }
+.bet-line > span:nth-child(3) { grid-area: stake; color: var(--gold-soft); font-weight: 900; }
+.bet-line .bet-status { grid-area: status; justify-self: end; }
+.bet-line .text-button { grid-area: action; justify-self: end; }
 .bet-status { font-weight: 950; }
 .bet-status.won { color: var(--green); }
 .bet-status.lost { color: var(--danger); }
@@ -517,6 +534,8 @@ button:hover, .file-button:hover { transform: translateY(-1px); border-color: rg
   .align-right { text-align: left; }
   .team-title-line.right { justify-content: flex-start; flex-direction: row-reverse; }
   .manual-controls, .bet-line, .profile-header, .profile-axis, .profile-controls { grid-template-columns: 1fr; }
+  .bet-line { grid-template-areas: none; gap: 6px; }
+  .bet-line > span:first-child, .bet-line strong, .bet-line > span:nth-child(3), .bet-line .bet-status, .bet-line .text-button { grid-area: auto; justify-self: start; }
   .confidence-pill { justify-self: start; }
   .odds-grid { grid-template-columns: 1fr 1fr; }
   .focus-grid { grid-template-columns: 1fr 1fr; }

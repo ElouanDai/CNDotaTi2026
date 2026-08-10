@@ -100,11 +100,14 @@ function canonicalTeamName(name: string) {
 function coerceMatchStatus(status?: string): MatchStatus { return status === "settled" || status === "void" ? status : "scheduled"; }
 function roundMoney(value: number) { return Math.round((Number.isFinite(value) ? value : 0) * 100) / 100; }
 function money(value: number) { return new Intl.NumberFormat("zh-CN", { style: "currency", currency: "CNY", maximumFractionDigits: 2 }).format(roundMoney(value)); }
+function integerStake(value: number) { return Math.max(0, Math.floor(Number.isFinite(value) ? value : 0)); }
+function stakeMoney(value: number) { return new Intl.NumberFormat("zh-CN", { style: "currency", currency: "CNY", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(integerStake(value)); }
 function pct(value?: number) { return value === undefined || !Number.isFinite(value) ? "-" : `${Math.round(value * 100)}%`; }
 function makeId(prefix: string) { const randomPart = globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2); return `${prefix}-${randomPart}`; }
 function normalizeName(name: string) { return name.trim().toLowerCase(); }
 function normalizeDateInput(value: string) { const trimmed = value.trim(); if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed; const match = trimmed.match(/^(\d{1,2})[/-](\d{1,2})$/); if (!match) return trimmed; return `2026-${match[1].padStart(2, "0")}-${match[2].padStart(2, "0")}`; }
 function coercePositiveNumber(value: string | number) { const parsed = typeof value === "number" ? value : Number(value); return Number.isFinite(parsed) && parsed > 0 ? parsed : 0; }
+function normalizeStakeDraft(value: string) { return value.trim() === "" ? "" : String(integerStake(coercePositiveNumber(value))); }
 function matchScheduleKey(match: Pick<Match, "date" | "time" | "teamA" | "teamB">) { return [match.date, match.time, canonicalTeamName(match.teamA), canonicalTeamName(match.teamB)].map(normalizeName).join("|"); }
 function normalizeTeamRecord(team: Team): Team {
   if (team.id === "onew-team" || ["1w team", "1win team"].includes(normalizeName(team.name))) return { ...team, name: "Iron Wing" };
@@ -112,6 +115,7 @@ function normalizeTeamRecord(team: Team): Team {
   return team;
 }
 function normalizeMatchRecord(match: Match): Match { return { ...match, teamA: canonicalTeamName(match.teamA), teamB: canonicalTeamName(match.teamB), status: coerceMatchStatus(match.status) }; }
+function normalizeBetRecord(bet: Bet): Bet { return { ...bet, stake: integerStake(bet.stake) }; }
 function mergeDefaultOdds(match: Match) {
   const baseline = DEFAULT_MATCHES.find((defaultMatch) => matchScheduleKey(defaultMatch) === matchScheduleKey(match));
   if (!baseline) return match;
@@ -133,14 +137,14 @@ function hydrateState(input?: Partial<AppState>): AppState {
   const teams = Array.isArray(input?.teams) && input.teams.length > 0 ? input.teams.map(normalizeTeamRecord) : DEFAULT_TEAMS;
   const matches = mergeDefaultMatches(Array.isArray(input?.matches) ? input.matches : []);
   const selectedDate = input?.selectedDate && input.selectedDate !== LEGACY_PRE_EVENT_DATE ? input.selectedDate : EVENT_START_DATE;
-  return { ...DEFAULT_STATE, ...input, selectedDate, teams, matches, bets: Array.isArray(input?.bets) ? input.bets : [] };
+  return { ...DEFAULT_STATE, ...input, selectedDate, teams, matches, bets: Array.isArray(input?.bets) ? input.bets.map(normalizeBetRecord) : [] };
 }
 function getTeam(state: AppState, name: string): Team { const canonicalName = canonicalTeamName(name); const existing = state.teams.find((team) => normalizeName(team.name) === normalizeName(canonicalName)); if (existing) return existing; const china = ["xtreme", "vici", "resilience"].some((keyword) => normalizeName(canonicalName).includes(keyword)); return { id: `custom-${normalizeName(canonicalName).replace(/[^a-z0-9]+/g, "-")}`, name: canonicalName.trim() || "未命名战队", region: china ? "China" : "Unknown", china, strength: china ? 72 : 70, seed: "Custom" }; }
 function logisticProbability(diff: number) { const raw = 1 / (1 + Math.exp(-diff / 10)); return Math.min(0.92, Math.max(0.08, raw)); }
 function impliedProbability(oddsA: number, oddsB: number) { if (oddsA <= 1 || oddsB <= 1) return { A: 0.5, B: 0.5 }; const invA = 1 / oddsA; const invB = 1 / oddsB; const total = invA + invB; return { A: invA / total, B: invB / total }; }
 function calculateMetrics(state: AppState) { const settled = state.bets.reduce((sum, bet) => { if (bet.status === "won") return sum + bet.stake * (bet.odds - 1); if (bet.status === "lost") return sum - bet.stake; return sum; }, 0); const pending = state.bets.reduce((sum, bet) => (bet.status === "open" ? sum + bet.stake : sum), 0); const bankroll = roundMoney(state.initialBankroll + settled); return { bankroll, available: roundMoney(bankroll - pending), pending: roundMoney(pending), settled: roundMoney(settled), won: state.bets.filter((bet) => bet.status === "won").length, lost: state.bets.filter((bet) => bet.status === "lost").length }; }
 function makeSkip(rationale: string): Recommendation { return { action: "skip", priority: "跳过", stake: 0, rationale }; }
-function capStake(value: number, baseBalance: number) { return roundMoney(Math.min(value, baseBalance * SINGLE_MATCH_CAP)); }
+function capStake(value: number, baseBalance: number) { return integerStake(Math.min(value, baseBalance * SINGLE_MATCH_CAP)); }
 
 function recommendForMatch(match: Match, state: AppState, baseBalance: number): Recommendation {
   const oddsA = coercePositiveNumber(match.oddsA);
@@ -213,7 +217,11 @@ function buildDayRecommendations(state: AppState, date: string, baseBalance: num
   const rawTotal = raw.reduce((sum, [, rec]) => sum + (rec.action === "bet" ? rec.stake : 0), 0);
   const capAmount = calculateMetrics(state).bankroll * RISK_CONFIG[state.risk].dailyCap;
   const scale = rawTotal > capAmount && rawTotal > 0 ? capAmount / rawTotal : 1;
-  return new Map(raw.map(([matchId, rec]) => [matchId, rec.action === "bet" ? { ...rec, stake: roundMoney(rec.stake * scale) } : rec]));
+  return new Map(raw.map(([matchId, rec]) => {
+    if (rec.action !== "bet") return [matchId, rec] as const;
+    const stake = integerStake(rec.stake * scale);
+    return [matchId, stake > 0 ? { ...rec, stake } : makeSkip("单日上限缩放后金额低于 1 元，跳过")] as const;
+  }));
 }
 
 function parseImportLine(line: string, selectedDate: string): MatchDraft | null {
@@ -309,7 +317,7 @@ export default function Home() {
   function handleBulkImport() { const drafts = bulkText.split(/\r?\n/).map((line) => parseImportLine(line, state.selectedDate)).filter((draft): draft is MatchDraft => Boolean(draft)); const matches: Match[] = drafts.map((draft) => ({ id: makeId("match"), date: normalizeDateInput(draft.date || state.selectedDate), time: draft.time.trim() || "待定", stage: draft.stage.trim() || "赛程", teamA: canonicalTeamName(draft.teamA), teamB: canonicalTeamName(draft.teamB), oddsA: coercePositiveNumber(draft.oddsA), oddsB: coercePositiveNumber(draft.oddsB), status: "scheduled" as MatchStatus, note: draft.note.trim() })).filter((match) => match.teamA && match.teamB); if (matches.length === 0) return; updateState((current) => ({ ...current, selectedDate: matches[0]?.date ?? current.selectedDate, matches: [...current.matches, ...matches].sort(sortMatches) })); setBulkText(""); }
   function updateMatch(matchId: string, patch: Partial<Match>) { updateState((current) => ({ ...current, matches: current.matches.map((match) => match.id === matchId ? { ...match, ...patch } : match) })); }
   function removeMatch(matchId: string) { if (!confirm("删除这场比赛和关联投注？")) return; updateState((current) => ({ ...current, matches: current.matches.filter((match) => match.id !== matchId), bets: current.bets.filter((bet) => bet.matchId !== matchId) })); }
-  function addBet(match: Match, side: BetSide, stake: number, strategy: BetStrategy, note = "") { const odds = side === "A" ? match.oddsA : match.oddsB; const team = side === "A" ? match.teamA : match.teamB; if (stake <= 0 || odds <= 1 || metrics.available < stake) return; const bet: Bet = { id: makeId("bet"), matchId: match.id, side, team, odds, stake: roundMoney(stake), status: "open", strategy, createdAt: new Date().toISOString(), note }; updateState((current) => ({ ...current, bets: [bet, ...current.bets] })); }
+  function addBet(match: Match, side: BetSide, stake: number, strategy: BetStrategy, note = "") { const odds = side === "A" ? match.oddsA : match.oddsB; const team = side === "A" ? match.teamA : match.teamB; const wholeStake = integerStake(stake); if (wholeStake <= 0 || odds <= 1 || metrics.available < wholeStake) return; const bet: Bet = { id: makeId("bet"), matchId: match.id, side, team, odds, stake: wholeStake, status: "open", strategy, createdAt: new Date().toISOString(), note }; updateState((current) => ({ ...current, bets: [bet, ...current.bets] })); }
   function applyRecommendation(match: Match) { const rec = recommendations.get(match.id); if (!rec || rec.action !== "bet" || !rec.side || !rec.strategy) return; addBet(match, rec.side, rec.stake, rec.strategy, rec.rationale); }
   function applyManualBet(match: Match) { const draft = manualDrafts[match.id] ?? { side: "A", stake: "" }; addBet(match, draft.side, coercePositiveNumber(draft.stake), "manual", "手动录入"); setManualDrafts((current) => ({ ...current, [match.id]: { ...draft, stake: "" } })); }
   function settleMatch(matchId: string, winner: BetSide | "void") { updateState((current) => ({ ...current, matches: current.matches.map((match) => match.id === matchId ? winner === "void" ? { ...match, status: "void", winner: undefined } : { ...match, status: "settled", winner } : match), bets: current.bets.map((bet) => { if (bet.matchId !== matchId || bet.status !== "open") return bet; if (winner === "void") return { ...bet, status: "void" }; return { ...bet, status: bet.side === winner ? "won" : "lost" }; }) })); }
@@ -347,8 +355,8 @@ export default function Home() {
             <div className="stats-grid compact-stats">
               <div className="stat-tile emphasis"><span>当前资金</span><strong>{money(metrics.bankroll)}</strong></div>
               <div className="stat-tile"><span>可用余额</span><strong>{money(metrics.available)}</strong></div>
-              <div className="stat-tile"><span>未结算敞口</span><strong>{money(metrics.pending)}</strong></div>
-              <div className="stat-tile"><span>今日建议</span><strong>{money(dayRecommendedTotal)}</strong></div>
+              <div className="stat-tile"><span>未结算敞口</span><strong>{stakeMoney(metrics.pending)}</strong></div>
+              <div className="stat-tile"><span>今日建议</span><strong>{stakeMoney(dayRecommendedTotal)}</strong></div>
               <div className="stat-tile"><span>已结算盈亏</span><strong className={metrics.settled >= 0 ? "positive" : "negative"}>{money(metrics.settled)}</strong></div>
               <div className="stat-tile"><span>战绩</span><strong>{metrics.won}-{metrics.lost}</strong></div>
             </div>
@@ -381,7 +389,7 @@ export default function Home() {
           <section className="tool-panel">
             <div className="section-heading">
               <div><p className="eyebrow">{state.selectedDate}</p><h2>赛程录入</h2></div>
-              <div className="heading-metric"><span>今日建议下注</span><strong>{money(dayRecommendedTotal)}</strong></div>
+              <div className="heading-metric"><span>今日建议下注</span><strong>{stakeMoney(dayRecommendedTotal)}</strong></div>
             </div>
             <div className="match-form">
               <label className="field"><span>日期</span><input type="date" value={matchDraft.date} onChange={(event) => setMatchDraft((draft) => ({ ...draft, date: event.target.value }))} /></label>
@@ -436,17 +444,17 @@ export default function Home() {
                   <div className="recommendation-box">
                     <div className="rec-topline"><span className={`priority p-${rec.priority}`}>{rec.priority}</span><strong>{rec.action === "bet" ? `押 ${rec.team}` : "不下注"}</strong></div>
                     <p>{rec.rationale}</p>
-                    {rec.action === "bet" ? <div className="rec-numbers"><span>建议 {money(rec.stake)}</span><span>赔率 {rec.odds?.toFixed(2)}</span><span>模型 {pct(rec.modelProbability)}</span><span>盘面 {pct(rec.marketProbability)}</span></div> : null}
+                    {rec.action === "bet" ? <div className="rec-numbers"><span>建议 {stakeMoney(rec.stake)}</span><span>赔率 {rec.odds?.toFixed(2)}</span><span>模型 {pct(rec.modelProbability)}</span><span>盘面 {pct(rec.marketProbability)}</span></div> : null}
                     <button type="button" className="primary full" disabled={rec.action !== "bet" || rec.stake <= 0 || match.status !== "scheduled"} onClick={() => applyRecommendation(match)}>采用建议</button>
                   </div>
                   <div className="manual-box">
                     <div className="manual-controls">
                       <select value={draft.side} onChange={(event) => setManualDrafts((current) => ({ ...current, [match.id]: { ...draft, side: event.target.value as BetSide } }))}><option value="A">押 {match.teamA}</option><option value="B">押 {match.teamB}</option></select>
-                      <input type="number" min="0" step="0.01" placeholder="金额" value={draft.stake} onChange={(event) => setManualDrafts((current) => ({ ...current, [match.id]: { ...draft, stake: event.target.value } }))} />
+                      <input type="number" min="0" step="1" inputMode="numeric" placeholder="整数金额" value={draft.stake} onChange={(event) => setManualDrafts((current) => ({ ...current, [match.id]: { ...draft, stake: normalizeStakeDraft(event.target.value) } }))} />
                       <button type="button" className="secondary" onClick={() => applyManualBet(match)}>手动下注</button>
                     </div>
                     <div className="settle-row"><button type="button" onClick={() => settleMatch(match.id, "A")}>A 胜</button><button type="button" onClick={() => settleMatch(match.id, "B")}>B 胜</button><button type="button" onClick={() => settleMatch(match.id, "void")}>走水</button>{match.status !== "scheduled" ? <button type="button" onClick={() => reopenMatch(match.id)}>撤销结算</button> : null}<button type="button" className="danger ghost" onClick={() => removeMatch(match.id)}>删除</button></div>
-                    {matchBets.length > 0 ? <div className="bet-lines">{matchBets.map((bet) => <div className="bet-line" key={bet.id}><span>{strategyLabel(bet.strategy)}</span><strong>{bet.team}</strong><span>{money(bet.stake)} @ {bet.odds.toFixed(2)}</span><span className={`bet-status ${bet.status}`}>{statusLabel(bet.status)}</span><button type="button" className="text-button" onClick={() => removeBet(bet.id)}>撤单</button></div>)}</div> : null}
+                    {matchBets.length > 0 ? <div className="bet-lines">{matchBets.map((bet) => <div className="bet-line" key={bet.id}><span>{strategyLabel(bet.strategy)}</span><strong>{bet.team}</strong><span>{stakeMoney(bet.stake)} @ {bet.odds.toFixed(2)}</span><span className={`bet-status ${bet.status}`}>{statusLabel(bet.status)}</span><button type="button" className="text-button" onClick={() => removeBet(bet.id)}>撤单</button></div>)}</div> : null}
                   </div>
                 </article>
               );
@@ -475,11 +483,11 @@ export default function Home() {
 
           <section className="tool-panel compact-panel">
             <div className="section-heading small"><h2>资金纪律</h2></div>
-            <div className="discipline-list"><div><span>风险档位</span><strong>{RISK_CONFIG[state.risk].description}</strong></div><div><span>今日上限</span><strong>{money(metrics.bankroll * RISK_CONFIG[state.risk].dailyCap)}</strong></div><div><span>剩余可用</span><strong>{money(metrics.available)}</strong></div><div><span>中国队识别</span><strong>{chinaTeams.map((team) => team.name).join("、")}</strong></div></div>
+            <div className="discipline-list"><div><span>风险档位</span><strong>{RISK_CONFIG[state.risk].description}</strong></div><div><span>今日上限</span><strong>{stakeMoney(metrics.bankroll * RISK_CONFIG[state.risk].dailyCap)}</strong></div><div><span>剩余可用</span><strong>{money(metrics.available)}</strong></div><div><span>中国队识别</span><strong>{chinaTeams.map((team) => team.name).join("、")}</strong></div></div>
           </section>
           <section className="tool-panel compact-panel rune-panel">
             <div className="section-heading small"><h2>未结算投注</h2><span>{openBets.length} 笔</span></div>
-            <div className="side-list">{openBets.length === 0 ? <p className="muted">暂无未结算投注。</p> : openBets.map((bet) => <div className={`side-item ${bet.strategy === "hedge-cn" ? "hedge-item" : ""}`} key={bet.id}><strong>{bet.team}</strong><span>{strategyLabel(bet.strategy)} · {money(bet.stake)} @ {bet.odds.toFixed(2)}</span></div>)}</div>
+            <div className="side-list">{openBets.length === 0 ? <p className="muted">暂无未结算投注。</p> : openBets.map((bet) => <div className={`side-item ${bet.strategy === "hedge-cn" ? "hedge-item" : ""}`} key={bet.id}><strong>{bet.team}</strong><span>{strategyLabel(bet.strategy)} · {stakeMoney(bet.stake)} @ {bet.odds.toFixed(2)}</span></div>)}</div>
           </section>
           <section className="tool-panel compact-panel">
             <div className="section-heading small"><h2>结算记录</h2><span>{settledBets.length} 笔</span></div>

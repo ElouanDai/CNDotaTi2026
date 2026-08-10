@@ -34,6 +34,7 @@ If a file is missing, stale, malformed, or conflicts with the user's message, sa
 - If both teams are Chinese, usually skip or make only a very small bet on the clearly stronger side.
 - If neither team is Chinese, recommend a bet only when the edge is clear and it helps preserve bankroll.
 - Respect `daily_cap_fraction` and `single_match_cap_fraction` in `data/state.json`.
+- All recommended stake amounts and manually logged stake amounts must be whole CNY integers. Floor calculated stakes instead of rounding up when enforcing caps.
 - If a China-team hedge target's opponent has extremely low win odds, especially below 1.12, usually skip because the hedge payoff is too small for the emotional downside. For 1.12-1.22, reduce stake materially.
 
 ## Data maintenance
@@ -83,5 +84,5 @@ When the user provides an odds screenshot or references a file in `data/input/`:
 ## Response style
 
 - Be concise and operational.
-- For betting advice, show stake amounts in CNY and include total day exposure.
+- For betting advice, show stake amounts as whole CNY integers and include total day exposure.
 - End betting advice with a manual execution checklist, not with automated actions.
