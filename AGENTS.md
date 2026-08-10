@@ -34,6 +34,7 @@ If a file is missing, stale, malformed, or conflicts with the user's message, sa
 - If both teams are Chinese, usually skip or make only a very small bet on the clearly stronger side.
 - If neither team is Chinese, recommend a bet only when the edge is clear and it helps preserve bankroll.
 - Respect `daily_cap_fraction` and `single_match_cap_fraction` in `data/state.json`.
+- If a China-team hedge target's opponent has extremely low win odds, especially below 1.12, usually skip because the hedge payoff is too small for the emotional downside. For 1.12-1.22, reduce stake materially.
 
 ## Data maintenance
 
@@ -57,6 +58,18 @@ When the user asks Codex in the command line to automatically update upcoming or
 - Validate JSON with a parser, summarize changed matches, then commit and push after the completed update.
 
 When the user asks for a realtime team-info update, update `data/team_profiles.json` from recent BP, hero pool, laning, macro, teamfight, and pressure-point evidence. Do not replace it with generic schedule or roster information.
+
+## Odds screenshot workflow
+
+When the user provides an odds screenshot or references a file in `data/input/`:
+
+- Inspect the screenshot and extract only the `全局获胜` decimal-odds column.
+- Ignore all handicap, map-spread, map-total, and other side markets unless the user explicitly changes the policy.
+- Match odds to existing schedule entries by team names and aliases from `data/teams.json`.
+- Update `data/current_schedule.json` and the relevant `data/daily/YYYY-MM-DD.json` odds fields.
+- Create a structured extraction record under `data/odds_snapshots/`, named after the screenshot id when possible, for example `26-08-13-01.json`.
+- Treat raw screenshots in `data/input/` as local sensitive evidence. Do not commit or push raw betting-site screenshots unless the user explicitly asks.
+- After updating odds, immediately read the required local betting context files and provide advice-only betting recommendations in the same response.
 
 ## Development workflow
 

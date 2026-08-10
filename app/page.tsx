@@ -41,6 +41,7 @@ const STORAGE_KEY = "ti2026-betting-assistant-v1";
 const EVENT_START_DATE = "2026-08-13";
 const LEGACY_PRE_EVENT_DATE = "2026-08-12";
 const INITIAL_BANKROLL = 981.42;
+const SINGLE_MATCH_CAP = 0.055;
 const RISK_CONFIG: Record<RiskLevel, { label: string; multiplier: number; dailyCap: number; description: string }> = {
   conservative: { label: "保守", multiplier: 0.72, dailyCap: 0.1, description: "保留资金，单日建议不超过 10%" },
   standard: { label: "标准", multiplier: 1, dailyCap: 0.15, description: "按对冲计划，单日建议不超过 15%" },
@@ -111,8 +112,19 @@ function normalizeTeamRecord(team: Team): Team {
   return team;
 }
 function normalizeMatchRecord(match: Match): Match { return { ...match, teamA: canonicalTeamName(match.teamA), teamB: canonicalTeamName(match.teamB), status: coerceMatchStatus(match.status) }; }
+function mergeDefaultOdds(match: Match) {
+  const baseline = DEFAULT_MATCHES.find((defaultMatch) => matchScheduleKey(defaultMatch) === matchScheduleKey(match));
+  if (!baseline) return match;
+  return {
+    ...match,
+    stage: match.stage || baseline.stage,
+    note: match.note || baseline.note,
+    oddsA: match.oddsA > 1 ? match.oddsA : baseline.oddsA,
+    oddsB: match.oddsB > 1 ? match.oddsB : baseline.oddsB,
+  };
+}
 function mergeDefaultMatches(savedMatches: Match[]) {
-  const normalized = savedMatches.filter((match) => match.date !== LEGACY_PRE_EVENT_DATE).map(normalizeMatchRecord);
+  const normalized = savedMatches.filter((match) => match.date !== LEGACY_PRE_EVENT_DATE).map(normalizeMatchRecord).map(mergeDefaultOdds);
   const existingKeys = new Set(normalized.map(matchScheduleKey));
   const missingDefaults = DEFAULT_MATCHES.filter((match) => !existingKeys.has(matchScheduleKey(match)));
   return [...missingDefaults, ...normalized].sort(sortMatches);
@@ -128,6 +140,7 @@ function logisticProbability(diff: number) { const raw = 1 / (1 + Math.exp(-diff
 function impliedProbability(oddsA: number, oddsB: number) { if (oddsA <= 1 || oddsB <= 1) return { A: 0.5, B: 0.5 }; const invA = 1 / oddsA; const invB = 1 / oddsB; const total = invA + invB; return { A: invA / total, B: invB / total }; }
 function calculateMetrics(state: AppState) { const settled = state.bets.reduce((sum, bet) => { if (bet.status === "won") return sum + bet.stake * (bet.odds - 1); if (bet.status === "lost") return sum - bet.stake; return sum; }, 0); const pending = state.bets.reduce((sum, bet) => (bet.status === "open" ? sum + bet.stake : sum), 0); const bankroll = roundMoney(state.initialBankroll + settled); return { bankroll, available: roundMoney(bankroll - pending), pending: roundMoney(pending), settled: roundMoney(settled), won: state.bets.filter((bet) => bet.status === "won").length, lost: state.bets.filter((bet) => bet.status === "lost").length }; }
 function makeSkip(rationale: string): Recommendation { return { action: "skip", priority: "跳过", stake: 0, rationale }; }
+function capStake(value: number, baseBalance: number) { return roundMoney(Math.min(value, baseBalance * SINGLE_MATCH_CAP)); }
 
 function recommendForMatch(match: Match, state: AppState, baseBalance: number): Recommendation {
   const oddsA = coercePositiveNumber(match.oddsA);
@@ -150,6 +163,8 @@ function recommendForMatch(match: Match, state: AppState, baseBalance: number): 
     const opponentSide: BetSide = chineseSide === "A" ? "B" : "A";
     const chineseTeam = chineseSide === "A" ? teamA : teamB;
     const opponentTeam = opponentSide === "A" ? teamA : teamB;
+    const opponentOdds = opponentSide === "A" ? oddsA : oddsB;
+    if (opponentOdds < 1.12) return makeSkip("对手胜赔过低，对冲收益不足，保留资金");
     const strengthGap = opponentTeam.strength - chineseTeam.strength;
     let basePct = 0;
     let priority: Recommendation["priority"] = "低";
@@ -159,7 +174,8 @@ function recommendForMatch(match: Match, state: AppState, baseBalance: number): 
     else if (strengthGap >= -8) { basePct = 0.018; priority = "低"; rationale = "中国队略强，只做小额情绪对冲"; }
     else if ((opponentSide === "A" ? oddsA : oddsB) >= 3.2) { basePct = 0.008; priority = "低"; rationale = "中国队优势大，仅在高赔率下保留极小对冲"; }
     else return makeSkip(rationale);
-    const stake = roundMoney(baseBalance * basePct * risk.multiplier);
+    if (opponentOdds < 1.22) { basePct *= 0.5; rationale = `${rationale}，但赔率偏低，金额折半`; }
+    const stake = capStake(baseBalance * basePct * risk.multiplier, baseBalance);
     const modelProbability = opponentSide === "A" ? pA : pB;
     const marketProbability = opponentSide === "A" ? market.A : market.B;
     return { action: stake > 0 ? "bet" : "skip", priority, side: opponentSide, team: opponentTeam.name, odds: opponentSide === "A" ? oddsA : oddsB, stake, rationale, modelProbability, marketProbability, edge: modelProbability - marketProbability, strategy: "hedge-cn" };
@@ -170,7 +186,7 @@ function recommendForMatch(match: Match, state: AppState, baseBalance: number): 
     const favorite = favoriteSide === "A" ? teamA : teamB;
     const diff = Math.abs(teamA.strength - teamB.strength);
     if (diff < 12) return makeSkip("中国队内战，不主动扩大风险");
-    const stake = roundMoney(baseBalance * 0.01 * risk.multiplier);
+    const stake = capStake(baseBalance * 0.01 * risk.multiplier, baseBalance);
     const modelProbability = favoriteSide === "A" ? pA : pB;
     const marketProbability = favoriteSide === "A" ? market.A : market.B;
     return { action: stake > 0 ? "bet" : "skip", priority: "低", side: favoriteSide, team: favorite.name, odds: favoriteSide === "A" ? oddsA : oddsB, stake, rationale: "中国队内战只小额押明显优势方", modelProbability, marketProbability, edge: modelProbability - marketProbability, strategy: "cn-derby" };
@@ -184,7 +200,7 @@ function recommendForMatch(match: Match, state: AppState, baseBalance: number): 
   const edge = modelProbability - marketProbability;
   if (modelProbability < 0.62 || edge < 0.09) return makeSkip("外战把握不足，资金留给中国队对冲");
   const basePct = edge >= 0.16 ? 0.022 : edge >= 0.12 ? 0.017 : 0.012;
-  const stake = roundMoney(baseBalance * basePct * risk.multiplier);
+  const stake = capStake(baseBalance * basePct * risk.multiplier, baseBalance);
   return { action: stake > 0 ? "bet" : "skip", priority: edge >= 0.16 ? "中" : "低", side, team: side === "A" ? teamA.name : teamB.name, odds: side === "A" ? oddsA : oddsB, stake, rationale: "外战模型优势明显，可小额回补资金", modelProbability, marketProbability, edge, strategy: "foreign-edge" };
 }
 
