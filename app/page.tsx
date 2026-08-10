@@ -15,7 +15,7 @@ type Team = { id: string; name: string; region: string; china: boolean; strength
 type Match = { id: string; date: string; time: string; stage: string; teamA: string; teamB: string; oddsA: number; oddsB: number; status: MatchStatus; winner?: BetSide; note?: string };
 type Bet = { id: string; matchId: string; side: BetSide; team: string; odds: number; stake: number; status: BetStatus; strategy: BetStrategy; createdAt: string; note?: string };
 type AppState = { initialBankroll: number; risk: RiskLevel; selectedDate: string; teams: Team[]; matches: Match[]; bets: Bet[] };
-type Recommendation = { action: "bet" | "skip"; priority: "高" | "中" | "低" | "跳过"; side?: BetSide; team?: string; odds?: number; stake: number; rationale: string; modelProbability?: number; marketProbability?: number; edge?: number; strategy?: BetStrategy };
+type Recommendation = { action: "bet" | "skip" | "placed"; priority: "高" | "中" | "低" | "跳过" | "已下注"; side?: BetSide; team?: string; odds?: number; stake: number; rationale: string; modelProbability?: number; marketProbability?: number; edge?: number; strategy?: BetStrategy };
 type MatchDraft = { date: string; time: string; stage: string; teamA: string; teamB: string; oddsA: string; oddsB: string; note: string };
 type ManualDraft = { side: BetSide; stake: string };
 type ScheduleMatchInput = { id: string; date: string; time: string; stage: string; format?: string; team_a: string; team_b: string; odds_a: number | null; odds_b: number | null; status?: string; notes?: string };
@@ -144,6 +144,14 @@ function logisticProbability(diff: number) { const raw = 1 / (1 + Math.exp(-diff
 function impliedProbability(oddsA: number, oddsB: number) { if (oddsA <= 1 || oddsB <= 1) return { A: 0.5, B: 0.5 }; const invA = 1 / oddsA; const invB = 1 / oddsB; const total = invA + invB; return { A: invA / total, B: invB / total }; }
 function calculateMetrics(state: AppState) { const settled = state.bets.reduce((sum, bet) => { if (bet.status === "won") return sum + bet.stake * (bet.odds - 1); if (bet.status === "lost") return sum - bet.stake; return sum; }, 0); const pending = state.bets.reduce((sum, bet) => (bet.status === "open" ? sum + bet.stake : sum), 0); const bankroll = roundMoney(state.initialBankroll + settled); return { bankroll, available: roundMoney(bankroll - pending), pending: roundMoney(pending), settled: roundMoney(settled), won: state.bets.filter((bet) => bet.status === "won").length, lost: state.bets.filter((bet) => bet.status === "lost").length }; }
 function makeSkip(rationale: string): Recommendation { return { action: "skip", priority: "跳过", stake: 0, rationale }; }
+function makePlaced(bets: Bet[]): Recommendation {
+  const openBets = bets.filter((bet) => bet.status === "open");
+  const primaryBet = openBets[0];
+  const totalStake = openBets.reduce((sum, bet) => sum + bet.stake, 0);
+  if (!primaryBet) return makeSkip("本场暂无未结算投注");
+  const extra = openBets.length > 1 ? `，共 ${openBets.length} 笔` : "";
+  return { action: "placed", priority: "已下注", side: primaryBet.side, team: primaryBet.team, odds: primaryBet.odds, stake: totalStake, rationale: `本场已有未结算投注${extra}：押 ${primaryBet.team}，合计 ${stakeMoney(totalStake)}`, strategy: primaryBet.strategy };
+}
 function capStake(value: number, baseBalance: number) { return integerStake(Math.min(value, baseBalance * SINGLE_MATCH_CAP)); }
 
 function recommendForMatch(match: Match, state: AppState, baseBalance: number): Recommendation {
@@ -209,9 +217,15 @@ function recommendForMatch(match: Match, state: AppState, baseBalance: number): 
 }
 
 function buildDayRecommendations(state: AppState, date: string, baseBalance: number) {
-  const openMatchIds = new Set(state.bets.filter((bet) => bet.status === "open").map((bet) => bet.matchId));
+  const openBetsByMatch = state.bets.filter((bet) => bet.status === "open").reduce((map, bet) => {
+    const matchBets = map.get(bet.matchId) ?? [];
+    matchBets.push(bet);
+    map.set(bet.matchId, matchBets);
+    return map;
+  }, new Map<string, Bet[]>());
   const raw = state.matches.filter((match) => match.date === date).map((match) => {
-    if (openMatchIds.has(match.id)) return [match.id, makeSkip("本场已有未结算投注")] as const;
+    const openBets = openBetsByMatch.get(match.id);
+    if (openBets) return [match.id, makePlaced(openBets)] as const;
     return [match.id, recommendForMatch(match, state, baseBalance)] as const;
   });
   const rawTotal = raw.reduce((sum, [, rec]) => sum + (rec.action === "bet" ? rec.stake : 0), 0);
@@ -238,6 +252,7 @@ function parseImportLine(line: string, selectedDate: string): MatchDraft | null 
 function sortMatches(a: Match, b: Match) { return `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`, "zh-CN"); }
 function strategyLabel(strategy: BetStrategy) { return { "hedge-cn": "中国队对冲", "cn-derby": "中国内战", "foreign-edge": "外战回补", manual: "手动" }[strategy]; }
 function statusLabel(status: BetStatus) { return { open: "未结算", won: "赢", lost: "输", void: "走水" }[status]; }
+function recommendationTitle(rec: Recommendation) { if (rec.action === "bet") return `押 ${rec.team}`; if (rec.action === "placed") return `已下注 ${rec.team}`; return "不下注"; }
 function teamInitials(name: string) {
   const normalized = normalizeName(name);
   if (normalized.includes("xtreme")) return "XG";
@@ -442,10 +457,11 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="recommendation-box">
-                    <div className="rec-topline"><span className={`priority p-${rec.priority}`}>{rec.priority}</span><strong>{rec.action === "bet" ? `押 ${rec.team}` : "不下注"}</strong></div>
+                    <div className="rec-topline"><span className={`priority p-${rec.priority}`}>{rec.priority}</span><strong>{recommendationTitle(rec)}</strong></div>
                     <p>{rec.rationale}</p>
                     {rec.action === "bet" ? <div className="rec-numbers"><span>建议 {stakeMoney(rec.stake)}</span><span>赔率 {rec.odds?.toFixed(2)}</span><span>模型 {pct(rec.modelProbability)}</span><span>盘面 {pct(rec.marketProbability)}</span></div> : null}
-                    <button type="button" className="primary full" disabled={rec.action !== "bet" || rec.stake <= 0 || match.status !== "scheduled"} onClick={() => applyRecommendation(match)}>采用建议</button>
+                    {rec.action === "placed" ? <div className="rec-numbers placed-numbers"><span>已押 {stakeMoney(rec.stake)}</span><span>赔率 {rec.odds?.toFixed(2)}</span><span>策略 {rec.strategy ? strategyLabel(rec.strategy) : "已记录"}</span><span>状态 未结算</span></div> : null}
+                    <button type="button" className="primary full" disabled={rec.action !== "bet" || rec.stake <= 0 || match.status !== "scheduled"} onClick={() => applyRecommendation(match)}>{rec.action === "placed" ? "已采纳" : "采用建议"}</button>
                   </div>
                   <div className="manual-box">
                     <div className="manual-controls">

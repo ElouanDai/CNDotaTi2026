@@ -349,9 +349,11 @@ button:hover, .file-button:hover { transform: translateY(-1px); border-color: rg
 .p-中 { background: var(--gold); color: #21150d; }
 .p-低 { background: var(--teal); }
 .p-跳过 { background: #756a5a; }
+.p-已下注 { background: var(--jade); color: #07130f; }
 .recommendation-box p { color: var(--muted); min-height: 42px; margin-bottom: 12px; }
 .rec-numbers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin-bottom: 12px; }
 .rec-numbers span { padding: 7px; background: rgba(16,13,11,0.84); border: 1px solid rgba(215,166,74,0.18); border-radius: 8px; color: #fff3d8; font-size: 12px; font-weight: 900; }
+.placed-numbers span { border-color: rgba(25,166,138,0.28); background: rgba(12,116,109,0.16); }
 .full { width: 100%; }
 .manual-controls { display: grid; grid-template-columns: minmax(0, 1fr) 92px 94px; gap: 8px; }
 .settle-row { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
