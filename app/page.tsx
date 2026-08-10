@@ -394,6 +394,8 @@ export default function Home() {
               const draft = manualDrafts[match.id] ?? { side: "A", stake: "" };
               const teamA = getTeam(state, match.teamA);
               const teamB = getTeam(state, match.teamB);
+              const profileA = getTeamProfile(teamA);
+              const profileB = getTeamProfile(teamB);
               return (
                 <article className={`match-card ${teamA.china || teamB.china ? "cn-match" : ""} ${[match.teamA, match.teamB].some((team) => normalizeName(team).includes("xtreme")) ? "xg-match" : ""}`} key={match.id}>
                   <div className="match-main">
@@ -401,13 +403,13 @@ export default function Home() {
                     <div className="teams-row">
                       <div className={`team-block ${teamA.china ? "china-side" : ""}`}>
                         <span className="side-label radiant">Radiant</span>
-                        <div className="team-title-line"><span className="mini-crest">{teamInitials(match.teamA)}</span><strong>{match.teamA}</strong></div>
+                        <div className="team-title-line"><span className={`mini-crest match-crest ${profileA.logo_path ? "has-team-logo" : ""}`}>{profileA.logo_path ? <span className="match-logo-image" style={{ backgroundImage: `url(${profileA.logo_path})` }} aria-label={`${match.teamA} logo`} role="img" /> : teamInitials(match.teamA)}</span><strong>{match.teamA}</strong></div>
                         <span>{teamA.china ? "中国队" : teamA.region} · 强度 {teamA.strength}</span>
                       </div>
                       <div className="versus"><span>VS</span><small>BO3</small></div>
                       <div className={`team-block align-right ${teamB.china ? "china-side" : ""}`}>
                         <span className="side-label dire">Dire</span>
-                        <div className="team-title-line right"><strong>{match.teamB}</strong><span className="mini-crest">{teamInitials(match.teamB)}</span></div>
+                        <div className="team-title-line right"><strong>{match.teamB}</strong><span className={`mini-crest match-crest ${profileB.logo_path ? "has-team-logo" : ""}`}>{profileB.logo_path ? <span className="match-logo-image" style={{ backgroundImage: `url(${profileB.logo_path})` }} aria-label={`${match.teamB} logo`} role="img" /> : teamInitials(match.teamB)}</span></div>
                         <span>{teamB.china ? "中国队" : teamB.region} · 强度 {teamB.strength}</span>
                       </div>
                     </div>

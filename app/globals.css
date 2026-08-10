@@ -322,6 +322,22 @@ button:hover, .file-button:hover { transform: translateY(-1px); border-color: rg
   font-size: 12px;
   font-weight: 950;
 }
+.match-crest {
+  background: rgba(6, 7, 8, 0.56);
+  border-color: rgba(215,166,74,0.26);
+  color: var(--gold-soft);
+  box-shadow: inset 0 0 18px rgba(215,166,74,0.1);
+}
+.match-crest.has-team-logo { background: rgba(5, 6, 7, 0.72); }
+.match-logo-image {
+  display: block;
+  width: 28px;
+  height: 28px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  filter: drop-shadow(0 5px 8px rgba(0,0,0,0.38));
+}
 .versus { height: 56px; border-radius: 8px; background: #100d0b; display: grid; place-items: center; color: var(--gold-soft); font-weight: 950; border: 1px solid rgba(215,166,74,0.28); }
 .versus small { color: var(--muted-2); font-size: 10px; margin-top: -8px; }
 .match-note { margin: 12px 0 0; color: var(--muted); font-size: 13px; }
