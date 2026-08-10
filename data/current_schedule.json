@@ -1,0 +1,10 @@
+﻿{
+  "schema_version": 1,
+  "event": "The International 2026",
+  "timezone": "Asia/Shanghai",
+  "operation_date": "2026-08-12",
+  "last_updated": "2026-08-10",
+  "bankroll_reference": "data/state.json",
+  "input_rule": "Update this file before asking Codex for CLI betting advice. Codex must only provide advice; the user executes all bets manually.",
+  "matches": []
+}

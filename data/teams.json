@@ -1,0 +1,326 @@
+﻿{
+  "schema_version": 1,
+  "event": {
+    "name": "The International 2026",
+    "game": "Dota 2",
+    "location": "Shanghai, China",
+    "timezone": "Asia/Shanghai",
+    "start_date": "2026-08-13",
+    "end_date": "2026-08-23",
+    "teams_count": 16,
+    "last_verified_at": "2026-08-10",
+    "verification_note": "Baseline rosters assembled from Liquipedia, Dot Esports, Escorenews, CyberScore/DLTV and e-Rankings pages crawled in late July/early August 2026. Re-verify before any high-stakes advice."
+  },
+  "sources": [
+    { "name": "Liquipedia - The International 2026", "url": "https://liquipedia.net/dota2/The_International/2026" },
+    { "name": "Dot Esports - All Dota 2 TI 2026 teams", "url": "https://dotesports.com/dota-2/news/dota-2-ti-2026-teams" },
+    { "name": "Escorenews - The International 2026", "url": "https://escorenews.com/en/dota-2/international-2026" },
+    { "name": "e-Rankings - The International 2026", "url": "https://www.e-rankings.com/dota-2/events/5925-the-international-2026/" }
+  ],
+  "teams": [
+    {
+      "id": "aurora-gaming",
+      "name": "Aurora Gaming",
+      "short_name": "Aurora",
+      "region": "EEU",
+      "country_or_org_flag": "Serbia",
+      "qualification": "Direct Invite",
+      "is_chinese_team": false,
+      "baseline_strength": 85,
+      "notes": "Direct invite. Strong international core; not a China hedge target unless facing a Chinese team.",
+      "players": [
+        { "position": 1, "handle": "Nightfall", "name": "Egor Grigorenko", "country": "Russia" },
+        { "position": 2, "handle": "Mikoto", "name": "Rafli Fathur Rahman", "country": "Indonesia" },
+        { "position": 3, "handle": "Ws", "name": "Chung Wei Shen", "country": "Malaysia" },
+        { "position": 4, "handle": "Mira", "name": "Myroslav Kolpakov", "country": "Ukraine" },
+        { "position": 5, "handle": "kaori", "name": "Oleh Medvedok", "country": "Ukraine" }
+      ],
+      "staff": [{ "role": "coach", "handle": "kpii", "country": "Australia" }]
+    },
+    {
+      "id": "boomboys",
+      "name": "BetBoom Team",
+      "aliases": ["BB", "BB Team", "BoomBoys"],
+      "region": "EEU",
+      "country_or_org_flag": "Russia",
+      "qualification": "Direct Invite",
+      "is_chinese_team": false,
+      "baseline_strength": 90,
+      "notes": "Some sources abbreviate the team as BB; odds sites may also show BetBoom or BB Team.",
+      "players": [
+        { "position": 1, "handle": "Kiritych~", "name": "Ilya Ulyanov", "country": "Russia" },
+        { "position": 2, "handle": "gpk~", "name": "Danil Skutin", "country": "Russia" },
+        { "position": 3, "handle": "MieRo`", "name": "Matvey Vasyunin", "country": "Russia" },
+        { "position": 4, "handle": "Save-", "name": "Vitalie Melnic", "country": "Moldova" },
+        { "position": 5, "handle": "Kataomi`", "name": "Vladislav Semenov", "country": "Russia" }
+      ],
+      "staff": [{ "role": "coach", "handle": "boolk", "country": "Russia" }]
+    },
+    {
+      "id": "team-falcons",
+      "name": "Team Falcons",
+      "region": "MESWA",
+      "country_or_org_flag": "Saudi Arabia",
+      "qualification": "Direct Invite",
+      "is_chinese_team": false,
+      "baseline_strength": 89,
+      "notes": "Defending champion profile and elite LAN pedigree; high-priority hedge opponent vs Chinese teams.",
+      "players": [
+        { "position": 1, "handle": "skiter", "name": "Oliver Lepko", "country": "Slovakia" },
+        { "position": 2, "handle": "Malr1ne", "name": "Stanislav Potorak", "country": "Russia" },
+        { "position": 3, "handle": "ATF", "name": "Ammar Al-Assaf", "country": "Jordan" },
+        { "position": 4, "handle": "Cr1t-", "name": "Andreas Nielsen", "country": "Denmark" },
+        { "position": 5, "handle": "Sneyking", "name": "Jingjun Wu", "country": "United States" }
+      ],
+      "staff": [{ "role": "coach", "handle": "Aui_2000", "country": "Canada" }]
+    },
+    {
+      "id": "team-liquid",
+      "name": "Team Liquid",
+      "region": "WEU",
+      "country_or_org_flag": "Netherlands",
+      "qualification": "Direct Invite",
+      "is_chinese_team": false,
+      "baseline_strength": 88,
+      "notes": "Current listed roster uses Ace/tOfu rather than the older SaberLight-/Insania version.",
+      "players": [
+        { "position": 1, "handle": "miCKe", "name": "Michael Vu", "country": "Sweden" },
+        { "position": 2, "handle": "Nisha", "name": "Michal Jankowski", "country": "Poland" },
+        { "position": 3, "handle": "Ace", "name": "Marcus Hoelgaard", "country": "Denmark" },
+        { "position": 4, "handle": "Boxi", "name": "Samuel Svahn", "country": "Sweden" },
+        { "position": 5, "handle": "tOfu", "name": "Erik Engel", "country": "Germany" }
+      ],
+      "staff": []
+    },
+    {
+      "id": "onew-team",
+      "name": "1w Team",
+      "aliases": ["1win Team"],
+      "region": "EEU",
+      "country_or_org_flag": "Russia",
+      "qualification": "Direct Invite",
+      "is_chinese_team": false,
+      "baseline_strength": 91,
+      "notes": "Former Tundra roster transferred to 1w Team.",
+      "players": [
+        { "position": 1, "handle": "Pure", "name": "Ivan Moskalenko", "country": "Russia" },
+        { "position": 2, "handle": "bzm", "name": "Bozhidar Bogdanov", "country": "Bulgaria" },
+        { "position": 3, "handle": "33", "name": "Neta Shapira", "country": "Israel" },
+        { "position": 4, "handle": "Ari", "name": "Matthew Walker", "country": "United Kingdom" },
+        { "position": 5, "handle": "Whitemon", "name": "Matthew Filemon", "country": "Indonesia" }
+      ],
+      "staff": [{ "role": "coach", "handle": "MoonMeander", "country": "Canada" }]
+    },
+    {
+      "id": "xtreme-gaming",
+      "name": "Xtreme Gaming",
+      "short_name": "XG",
+      "region": "China",
+      "country_or_org_flag": "China",
+      "qualification": "Direct Invite",
+      "is_chinese_team": true,
+      "baseline_strength": 88,
+      "notes": "Primary Chinese championship hope in the initial hedge plan.",
+      "players": [
+        { "position": 1, "handle": "Ame", "name": "Wang Chunyu", "country": "China" },
+        { "position": 2, "handle": "NothingToSay", "name": "Cheng Jin Xiang", "country": "Malaysia" },
+        { "position": 3, "handle": "Xxs", "name": "Lin Jing", "country": "China" },
+        { "position": 4, "handle": "fy", "name": "Xu Linsen", "country": "China" },
+        { "position": 5, "handle": "xNova", "name": "Yap Jian Wei", "country": "Malaysia" }
+      ],
+      "staff": []
+    },
+    {
+      "id": "team-yandex",
+      "name": "Team Yandex",
+      "region": "EEU",
+      "country_or_org_flag": "Russia",
+      "qualification": "Direct Invite",
+      "is_chinese_team": false,
+      "baseline_strength": 92,
+      "notes": "Ranking models list this as one of the strongest teams entering TI2026.",
+      "players": [
+        { "position": 1, "handle": "watson", "name": "Alimzhan Islambekov", "country": "Kazakhstan" },
+        { "position": 2, "handle": "CHIRA_JUNIOR", "name": "Daniil Drutskoy", "country": "Russia" },
+        { "position": 3, "handle": "DM", "name": "Dmitry Dorokhin", "country": "Russia" },
+        { "position": 4, "handle": "Saksa", "name": "Martin Sazdov", "country": "North Macedonia" },
+        { "position": 5, "handle": "Malady", "name": "Arman Orazbayev", "country": "Kazakhstan" }
+      ],
+      "staff": []
+    },
+    {
+      "id": "team-spirit",
+      "name": "Team Spirit",
+      "region": "Europe",
+      "country_or_org_flag": "Serbia",
+      "qualification": "Europe Regional Qualifier",
+      "is_chinese_team": false,
+      "baseline_strength": 86,
+      "notes": "Qualified from Europe. Confirm current support handles as not me/rue before match-day advice.",
+      "players": [
+        { "position": 1, "handle": "Yatoro", "name": "Illya Mulyarchuk", "country": "Ukraine" },
+        { "position": 2, "handle": "Larl", "name": "Denis Sigitov", "country": "Russia" },
+        { "position": 3, "handle": "Collapse", "name": "Magomed Khalilov", "country": "Russia" },
+        { "position": 4, "handle": "not me", "country": "Russia" },
+        { "position": 5, "handle": "rue", "country": "Russia" }
+      ],
+      "staff": []
+    },
+    {
+      "id": "team-vision",
+      "name": "TEAM VISION",
+      "aliases": ["PARIVISION", "Parivision"],
+      "region": "Europe",
+      "country_or_org_flag": "Russia",
+      "qualification": "Europe Regional Qualifier",
+      "is_chinese_team": false,
+      "baseline_strength": 87,
+      "notes": "PARIVISION compete as TEAM VISION in the qualifier/TI context.",
+      "players": [
+        { "position": 1, "handle": "Satanic", "name": "Alan Gallyamov", "country": "Russia" },
+        { "position": 2, "handle": "None-", "aliases": ["No[o]ne-"], "name": "Volodymyr Minenko", "country": "Ukraine" },
+        { "position": 3, "handle": "Noticed", "name": "Evgeniy Ignatenko", "country": "Russia" },
+        { "position": 4, "handle": "9Class", "name": "Edgar Naltakyan", "country": "Russia" },
+        { "position": 5, "handle": "Dukalis", "name": "Andrey Kuropatkin", "country": "Russia" }
+      ],
+      "staff": []
+    },
+    {
+      "id": "nigma-galaxy",
+      "name": "Nigma Galaxy",
+      "region": "Europe/MENA",
+      "country_or_org_flag": "UAE",
+      "qualification": "Europe Regional Qualifier",
+      "is_chinese_team": false,
+      "baseline_strength": 78,
+      "notes": "Veteran-heavy roster. Re-check lorenof spelling/capitalization before display use.",
+      "players": [
+        { "position": 1, "handle": "SumaiL", "name": "Syed Sumail Hassan", "country": "Pakistan" },
+        { "position": 2, "handle": "lorenof", "name": "Artem Melnick", "country": "Ukraine" },
+        { "position": 3, "handle": "Davai", "name": "Cedric Deckmyn", "country": "Belgium" },
+        { "position": 4, "handle": "OmaR", "name": "Omar Moughrabi", "country": "Lebanon" },
+        { "position": 5, "handle": "GH", "name": "Maroun Merhej", "country": "Lebanon" }
+      ],
+      "staff": []
+    },
+    {
+      "id": "huligani",
+      "name": "HULIGANI",
+      "aliases": ["L1GA TEAM"],
+      "region": "Europe",
+      "country_or_org_flag": "Russia",
+      "qualification": "Europe Regional Qualifier",
+      "is_chinese_team": false,
+      "baseline_strength": 70,
+      "notes": "L1GA TEAM compete as HULIGANI.",
+      "players": [
+        { "position": 1, "handle": "ssnovv1", "country": "Russia" },
+        { "position": 2, "handle": "Mirage`", "country": "Kazakhstan" },
+        { "position": 3, "handle": "Corrupted", "country": "Russia" },
+        { "position": 4, "handle": "sayuw", "country": "Russia" },
+        { "position": 5, "handle": "RESPECT", "country": "Belarus" }
+      ],
+      "staff": []
+    },
+    {
+      "id": "team-resilience",
+      "name": "Team Resilience",
+      "short_name": "TR",
+      "region": "China",
+      "country_or_org_flag": "China",
+      "qualification": "China Regional Qualifier",
+      "is_chinese_team": true,
+      "baseline_strength": 76,
+      "notes": "Chinese qualifier winner. Treat as Chinese team for hedge rules.",
+      "players": [
+        { "position": 1, "handle": "YSR-04E", "name": "Yang Shaohan", "country": "China" },
+        { "position": 2, "handle": "Echozz", "aliases": ["Echo"], "name": "Xu Ziliang", "country": "China" },
+        { "position": 3, "handle": "niu", "name": "Li Kongbo", "country": "China" },
+        { "position": 4, "handle": "planet", "aliases": ["plAnet"], "name": "Lin Hao", "country": "China" },
+        { "position": 5, "handle": "zzq", "name": "Zhang Ziqiang", "country": "China" }
+      ],
+      "staff": [{ "role": "coach", "handle": "Super", "name": "Xie Junhao", "country": "China" }]
+    },
+    {
+      "id": "vici-gaming",
+      "name": "Vici Gaming",
+      "short_name": "VG",
+      "region": "China",
+      "country_or_org_flag": "China",
+      "qualification": "China Regional Qualifier",
+      "is_chinese_team": true,
+      "baseline_strength": 79,
+      "notes": "Chinese qualifier runner-up. Faith_bian appears as Bach in several match data feeds.",
+      "players": [
+        { "position": 1, "handle": "shiro", "name": "Guo Xuanyang", "country": "China" },
+        { "position": 2, "handle": "Xm", "name": "Guo Hongcheng", "country": "China" },
+        { "position": 3, "handle": "Bach", "aliases": ["Faith_bian"], "name": "Zhang Ruida", "country": "China" },
+        { "position": 4, "handle": "XinQ", "name": "Zhao Zixing", "country": "China" },
+        { "position": 5, "handle": "y`", "name": "Zhang Yiping", "country": "China" }
+      ],
+      "staff": [{ "role": "coach", "handle": "Yao", "country": "China" }]
+    },
+    {
+      "id": "og",
+      "name": "OG",
+      "region": "SEA",
+      "country_or_org_flag": "International",
+      "qualification": "Southeast Asia Regional Qualifier",
+      "is_chinese_team": false,
+      "baseline_strength": 74,
+      "notes": "SEA qualifier winner with Filipino core.",
+      "players": [
+        { "position": 1, "handle": "Natsumi-", "country": "Philippines" },
+        { "position": 2, "handle": "Yopaj-", "country": "Philippines" },
+        { "position": 3, "handle": "Raven^", "country": "Philippines" },
+        { "position": 4, "handle": "TIMS", "country": "Philippines" },
+        { "position": 5, "handle": "skem", "country": "Philippines" }
+      ],
+      "staff": []
+    },
+    {
+      "id": "gamerlegion",
+      "name": "GamerLegion",
+      "short_name": "GL",
+      "region": "North America",
+      "country_or_org_flag": "United States",
+      "qualification": "North America Closed Qualifier",
+      "is_chinese_team": false,
+      "baseline_strength": 72,
+      "notes": "NA qualifier winner; some feeds list Speeed as pos 5 despite prior offlane history.",
+      "players": [
+        { "position": 1, "handle": "Ghost", "country": "Malaysia" },
+        { "position": 2, "handle": "RCY", "country": "United States" },
+        { "position": 3, "handle": "Fayde", "country": "United States" },
+        { "position": 4, "handle": "Bignum", "country": "Ukraine" },
+        { "position": 5, "handle": "Speeed", "country": "United States" }
+      ],
+      "staff": []
+    },
+    {
+      "id": "lgd-gaming",
+      "name": "LGD Gaming",
+      "short_name": "LGD",
+      "region": "South America",
+      "country_or_org_flag": "China org / SA roster",
+      "qualification": "South America Regional Qualifier",
+      "is_chinese_team": false,
+      "baseline_strength": 73,
+      "notes": "Chinese organization, South American roster. Do not treat as Chinese team for hedge objective unless user explicitly says to support the org rather than Chinese-region teams.",
+      "players": [
+        { "position": 1, "handle": "Yuma", "name": "Yuma Langlet", "country": "Nicaragua" },
+        { "position": 2, "handle": "TaiLung", "name": "Santiago Olivos Aguero Gustavo", "country": "Peru" },
+        { "position": 3, "handle": "Wisper", "name": "Adrian Cespedes Dobles", "country": "Bolivia" },
+        { "position": 4, "handle": "Thiolicor", "name": "Thiago Cordeiro", "country": "Brazil" },
+        { "position": 5, "handle": "KJ", "name": "Matheus Santos Jungles Diniz", "country": "Brazil" }
+      ],
+      "staff": [
+        { "role": "coach", "handle": "kaffs", "country": "Brazil" },
+        { "role": "coach", "handle": "fcr", "country": "Brazil" }
+      ]
+    }
+  ]
+}
+
+
+

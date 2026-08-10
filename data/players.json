@@ -1,0 +1,816 @@
+﻿{
+    "schema_version":  1,
+    "event":  "The International 2026",
+    "generated_from":  "data/teams.json",
+    "generated_at":  "2026-08-10",
+    "players":  [
+                    {
+                        "team_id":  "aurora-gaming",
+                        "team_name":  "Aurora Gaming",
+                        "is_chinese_team":  false,
+                        "position":  1,
+                        "handle":  "Nightfall",
+                        "aliases":  null,
+                        "name":  "Egor Grigorenko",
+                        "country":  "Russia"
+                    },
+                    {
+                        "team_id":  "aurora-gaming",
+                        "team_name":  "Aurora Gaming",
+                        "is_chinese_team":  false,
+                        "position":  2,
+                        "handle":  "Mikoto",
+                        "aliases":  null,
+                        "name":  "Rafli Fathur Rahman",
+                        "country":  "Indonesia"
+                    },
+                    {
+                        "team_id":  "aurora-gaming",
+                        "team_name":  "Aurora Gaming",
+                        "is_chinese_team":  false,
+                        "position":  3,
+                        "handle":  "Ws",
+                        "aliases":  null,
+                        "name":  "Chung Wei Shen",
+                        "country":  "Malaysia"
+                    },
+                    {
+                        "team_id":  "aurora-gaming",
+                        "team_name":  "Aurora Gaming",
+                        "is_chinese_team":  false,
+                        "position":  4,
+                        "handle":  "Mira",
+                        "aliases":  null,
+                        "name":  "Myroslav Kolpakov",
+                        "country":  "Ukraine"
+                    },
+                    {
+                        "team_id":  "aurora-gaming",
+                        "team_name":  "Aurora Gaming",
+                        "is_chinese_team":  false,
+                        "position":  5,
+                        "handle":  "kaori",
+                        "aliases":  null,
+                        "name":  "Oleh Medvedok",
+                        "country":  "Ukraine"
+                    },
+                    {
+                        "team_id":  "boomboys",
+                        "team_name":  "BetBoom Team",
+                        "is_chinese_team":  false,
+                        "position":  1,
+                        "handle":  "Kiritych~",
+                        "aliases":  null,
+                        "name":  "Ilya Ulyanov",
+                        "country":  "Russia"
+                    },
+                    {
+                        "team_id":  "boomboys",
+                        "team_name":  "BetBoom Team",
+                        "is_chinese_team":  false,
+                        "position":  2,
+                        "handle":  "gpk~",
+                        "aliases":  null,
+                        "name":  "Danil Skutin",
+                        "country":  "Russia"
+                    },
+                    {
+                        "team_id":  "boomboys",
+                        "team_name":  "BetBoom Team",
+                        "is_chinese_team":  false,
+                        "position":  3,
+                        "handle":  "MieRo`",
+                        "aliases":  null,
+                        "name":  "Matvey Vasyunin",
+                        "country":  "Russia"
+                    },
+                    {
+                        "team_id":  "boomboys",
+                        "team_name":  "BetBoom Team",
+                        "is_chinese_team":  false,
+                        "position":  4,
+                        "handle":  "Save-",
+                        "aliases":  null,
+                        "name":  "Vitalie Melnic",
+                        "country":  "Moldova"
+                    },
+                    {
+                        "team_id":  "boomboys",
+                        "team_name":  "BetBoom Team",
+                        "is_chinese_team":  false,
+                        "position":  5,
+                        "handle":  "Kataomi`",
+                        "aliases":  null,
+                        "name":  "Vladislav Semenov",
+                        "country":  "Russia"
+                    },
+                    {
+                        "team_id":  "team-falcons",
+                        "team_name":  "Team Falcons",
+                        "is_chinese_team":  false,
+                        "position":  1,
+                        "handle":  "skiter",
+                        "aliases":  null,
+                        "name":  "Oliver Lepko",
+                        "country":  "Slovakia"
+                    },
+                    {
+                        "team_id":  "team-falcons",
+                        "team_name":  "Team Falcons",
+                        "is_chinese_team":  false,
+                        "position":  2,
+                        "handle":  "Malr1ne",
+                        "aliases":  null,
+                        "name":  "Stanislav Potorak",
+                        "country":  "Russia"
+                    },
+                    {
+                        "team_id":  "team-falcons",
+                        "team_name":  "Team Falcons",
+                        "is_chinese_team":  false,
+                        "position":  3,
+                        "handle":  "ATF",
+                        "aliases":  null,
+                        "name":  "Ammar Al-Assaf",
+                        "country":  "Jordan"
+                    },
+                    {
+                        "team_id":  "team-falcons",
+                        "team_name":  "Team Falcons",
+                        "is_chinese_team":  false,
+                        "position":  4,
+                        "handle":  "Cr1t-",
+                        "aliases":  null,
+                        "name":  "Andreas Nielsen",
+                        "country":  "Denmark"
+                    },
+                    {
+                        "team_id":  "team-falcons",
+                        "team_name":  "Team Falcons",
+                        "is_chinese_team":  false,
+                        "position":  5,
+                        "handle":  "Sneyking",
+                        "aliases":  null,
+                        "name":  "Jingjun Wu",
+                        "country":  "United States"
+                    },
+                    {
+                        "team_id":  "team-liquid",
+                        "team_name":  "Team Liquid",
+                        "is_chinese_team":  false,
+                        "position":  1,
+                        "handle":  "miCKe",
+                        "aliases":  null,
+                        "name":  "Michael Vu",
+                        "country":  "Sweden"
+                    },
+                    {
+                        "team_id":  "team-liquid",
+                        "team_name":  "Team Liquid",
+                        "is_chinese_team":  false,
+                        "position":  2,
+                        "handle":  "Nisha",
+                        "aliases":  null,
+                        "name":  "Michal Jankowski",
+                        "country":  "Poland"
+                    },
+                    {
+                        "team_id":  "team-liquid",
+                        "team_name":  "Team Liquid",
+                        "is_chinese_team":  false,
+                        "position":  3,
+                        "handle":  "Ace",
+                        "aliases":  null,
+                        "name":  "Marcus Hoelgaard",
+                        "country":  "Denmark"
+                    },
+                    {
+                        "team_id":  "team-liquid",
+                        "team_name":  "Team Liquid",
+                        "is_chinese_team":  false,
+                        "position":  4,
+                        "handle":  "Boxi",
+                        "aliases":  null,
+                        "name":  "Samuel Svahn",
+                        "country":  "Sweden"
+                    },
+                    {
+                        "team_id":  "team-liquid",
+                        "team_name":  "Team Liquid",
+                        "is_chinese_team":  false,
+                        "position":  5,
+                        "handle":  "tOfu",
+                        "aliases":  null,
+                        "name":  "Erik Engel",
+                        "country":  "Germany"
+                    },
+                    {
+                        "team_id":  "onew-team",
+                        "team_name":  "1w Team",
+                        "is_chinese_team":  false,
+                        "position":  1,
+                        "handle":  "Pure",
+                        "aliases":  null,
+                        "name":  "Ivan Moskalenko",
+                        "country":  "Russia"
+                    },
+                    {
+                        "team_id":  "onew-team",
+                        "team_name":  "1w Team",
+                        "is_chinese_team":  false,
+                        "position":  2,
+                        "handle":  "bzm",
+                        "aliases":  null,
+                        "name":  "Bozhidar Bogdanov",
+                        "country":  "Bulgaria"
+                    },
+                    {
+                        "team_id":  "onew-team",
+                        "team_name":  "1w Team",
+                        "is_chinese_team":  false,
+                        "position":  3,
+                        "handle":  "33",
+                        "aliases":  null,
+                        "name":  "Neta Shapira",
+                        "country":  "Israel"
+                    },
+                    {
+                        "team_id":  "onew-team",
+                        "team_name":  "1w Team",
+                        "is_chinese_team":  false,
+                        "position":  4,
+                        "handle":  "Ari",
+                        "aliases":  null,
+                        "name":  "Matthew Walker",
+                        "country":  "United Kingdom"
+                    },
+                    {
+                        "team_id":  "onew-team",
+                        "team_name":  "1w Team",
+                        "is_chinese_team":  false,
+                        "position":  5,
+                        "handle":  "Whitemon",
+                        "aliases":  null,
+                        "name":  "Matthew Filemon",
+                        "country":  "Indonesia"
+                    },
+                    {
+                        "team_id":  "xtreme-gaming",
+                        "team_name":  "Xtreme Gaming",
+                        "is_chinese_team":  true,
+                        "position":  1,
+                        "handle":  "Ame",
+                        "aliases":  null,
+                        "name":  "Wang Chunyu",
+                        "country":  "China"
+                    },
+                    {
+                        "team_id":  "xtreme-gaming",
+                        "team_name":  "Xtreme Gaming",
+                        "is_chinese_team":  true,
+                        "position":  2,
+                        "handle":  "NothingToSay",
+                        "aliases":  null,
+                        "name":  "Cheng Jin Xiang",
+                        "country":  "Malaysia"
+                    },
+                    {
+                        "team_id":  "xtreme-gaming",
+                        "team_name":  "Xtreme Gaming",
+                        "is_chinese_team":  true,
+                        "position":  3,
+                        "handle":  "Xxs",
+                        "aliases":  null,
+                        "name":  "Lin Jing",
+                        "country":  "China"
+                    },
+                    {
+                        "team_id":  "xtreme-gaming",
+                        "team_name":  "Xtreme Gaming",
+                        "is_chinese_team":  true,
+                        "position":  4,
+                        "handle":  "fy",
+                        "aliases":  null,
+                        "name":  "Xu Linsen",
+                        "country":  "China"
+                    },
+                    {
+                        "team_id":  "xtreme-gaming",
+                        "team_name":  "Xtreme Gaming",
+                        "is_chinese_team":  true,
+                        "position":  5,
+                        "handle":  "xNova",
+                        "aliases":  null,
+                        "name":  "Yap Jian Wei",
+                        "country":  "Malaysia"
+                    },
+                    {
+                        "team_id":  "team-yandex",
+                        "team_name":  "Team Yandex",
+                        "is_chinese_team":  false,
+                        "position":  1,
+                        "handle":  "watson",
+                        "aliases":  null,
+                        "name":  "Alimzhan Islambekov",
+                        "country":  "Kazakhstan"
+                    },
+                    {
+                        "team_id":  "team-yandex",
+                        "team_name":  "Team Yandex",
+                        "is_chinese_team":  false,
+                        "position":  2,
+                        "handle":  "CHIRA_JUNIOR",
+                        "aliases":  null,
+                        "name":  "Daniil Drutskoy",
+                        "country":  "Russia"
+                    },
+                    {
+                        "team_id":  "team-yandex",
+                        "team_name":  "Team Yandex",
+                        "is_chinese_team":  false,
+                        "position":  3,
+                        "handle":  "DM",
+                        "aliases":  null,
+                        "name":  "Dmitry Dorokhin",
+                        "country":  "Russia"
+                    },
+                    {
+                        "team_id":  "team-yandex",
+                        "team_name":  "Team Yandex",
+                        "is_chinese_team":  false,
+                        "position":  4,
+                        "handle":  "Saksa",
+                        "aliases":  null,
+                        "name":  "Martin Sazdov",
+                        "country":  "North Macedonia"
+                    },
+                    {
+                        "team_id":  "team-yandex",
+                        "team_name":  "Team Yandex",
+                        "is_chinese_team":  false,
+                        "position":  5,
+                        "handle":  "Malady",
+                        "aliases":  null,
+                        "name":  "Arman Orazbayev",
+                        "country":  "Kazakhstan"
+                    },
+                    {
+                        "team_id":  "team-spirit",
+                        "team_name":  "Team Spirit",
+                        "is_chinese_team":  false,
+                        "position":  1,
+                        "handle":  "Yatoro",
+                        "aliases":  null,
+                        "name":  "Illya Mulyarchuk",
+                        "country":  "Ukraine"
+                    },
+                    {
+                        "team_id":  "team-spirit",
+                        "team_name":  "Team Spirit",
+                        "is_chinese_team":  false,
+                        "position":  2,
+                        "handle":  "Larl",
+                        "aliases":  null,
+                        "name":  "Denis Sigitov",
+                        "country":  "Russia"
+                    },
+                    {
+                        "team_id":  "team-spirit",
+                        "team_name":  "Team Spirit",
+                        "is_chinese_team":  false,
+                        "position":  3,
+                        "handle":  "Collapse",
+                        "aliases":  null,
+                        "name":  "Magomed Khalilov",
+                        "country":  "Russia"
+                    },
+                    {
+                        "team_id":  "team-spirit",
+                        "team_name":  "Team Spirit",
+                        "is_chinese_team":  false,
+                        "position":  4,
+                        "handle":  "not me",
+                        "aliases":  null,
+                        "name":  null,
+                        "country":  "Russia"
+                    },
+                    {
+                        "team_id":  "team-spirit",
+                        "team_name":  "Team Spirit",
+                        "is_chinese_team":  false,
+                        "position":  5,
+                        "handle":  "rue",
+                        "aliases":  null,
+                        "name":  null,
+                        "country":  "Russia"
+                    },
+                    {
+                        "team_id":  "team-vision",
+                        "team_name":  "TEAM VISION",
+                        "is_chinese_team":  false,
+                        "position":  1,
+                        "handle":  "Satanic",
+                        "aliases":  null,
+                        "name":  "Alan Gallyamov",
+                        "country":  "Russia"
+                    },
+                    {
+                        "team_id":  "team-vision",
+                        "team_name":  "TEAM VISION",
+                        "is_chinese_team":  false,
+                        "position":  2,
+                        "handle":  "None-",
+                        "aliases":  [
+                                        "No[o]ne-"
+                                    ],
+                        "name":  "Volodymyr Minenko",
+                        "country":  "Ukraine"
+                    },
+                    {
+                        "team_id":  "team-vision",
+                        "team_name":  "TEAM VISION",
+                        "is_chinese_team":  false,
+                        "position":  3,
+                        "handle":  "Noticed",
+                        "aliases":  null,
+                        "name":  "Evgeniy Ignatenko",
+                        "country":  "Russia"
+                    },
+                    {
+                        "team_id":  "team-vision",
+                        "team_name":  "TEAM VISION",
+                        "is_chinese_team":  false,
+                        "position":  4,
+                        "handle":  "9Class",
+                        "aliases":  null,
+                        "name":  "Edgar Naltakyan",
+                        "country":  "Russia"
+                    },
+                    {
+                        "team_id":  "team-vision",
+                        "team_name":  "TEAM VISION",
+                        "is_chinese_team":  false,
+                        "position":  5,
+                        "handle":  "Dukalis",
+                        "aliases":  null,
+                        "name":  "Andrey Kuropatkin",
+                        "country":  "Russia"
+                    },
+                    {
+                        "team_id":  "nigma-galaxy",
+                        "team_name":  "Nigma Galaxy",
+                        "is_chinese_team":  false,
+                        "position":  1,
+                        "handle":  "SumaiL",
+                        "aliases":  null,
+                        "name":  "Syed Sumail Hassan",
+                        "country":  "Pakistan"
+                    },
+                    {
+                        "team_id":  "nigma-galaxy",
+                        "team_name":  "Nigma Galaxy",
+                        "is_chinese_team":  false,
+                        "position":  2,
+                        "handle":  "lorenof",
+                        "aliases":  null,
+                        "name":  "Artem Melnick",
+                        "country":  "Ukraine"
+                    },
+                    {
+                        "team_id":  "nigma-galaxy",
+                        "team_name":  "Nigma Galaxy",
+                        "is_chinese_team":  false,
+                        "position":  3,
+                        "handle":  "Davai",
+                        "aliases":  null,
+                        "name":  "Cedric Deckmyn",
+                        "country":  "Belgium"
+                    },
+                    {
+                        "team_id":  "nigma-galaxy",
+                        "team_name":  "Nigma Galaxy",
+                        "is_chinese_team":  false,
+                        "position":  4,
+                        "handle":  "OmaR",
+                        "aliases":  null,
+                        "name":  "Omar Moughrabi",
+                        "country":  "Lebanon"
+                    },
+                    {
+                        "team_id":  "nigma-galaxy",
+                        "team_name":  "Nigma Galaxy",
+                        "is_chinese_team":  false,
+                        "position":  5,
+                        "handle":  "GH",
+                        "aliases":  null,
+                        "name":  "Maroun Merhej",
+                        "country":  "Lebanon"
+                    },
+                    {
+                        "team_id":  "huligani",
+                        "team_name":  "HULIGANI",
+                        "is_chinese_team":  false,
+                        "position":  1,
+                        "handle":  "ssnovv1",
+                        "aliases":  null,
+                        "name":  null,
+                        "country":  "Russia"
+                    },
+                    {
+                        "team_id":  "huligani",
+                        "team_name":  "HULIGANI",
+                        "is_chinese_team":  false,
+                        "position":  2,
+                        "handle":  "Mirage`",
+                        "aliases":  null,
+                        "name":  null,
+                        "country":  "Kazakhstan"
+                    },
+                    {
+                        "team_id":  "huligani",
+                        "team_name":  "HULIGANI",
+                        "is_chinese_team":  false,
+                        "position":  3,
+                        "handle":  "Corrupted",
+                        "aliases":  null,
+                        "name":  null,
+                        "country":  "Russia"
+                    },
+                    {
+                        "team_id":  "huligani",
+                        "team_name":  "HULIGANI",
+                        "is_chinese_team":  false,
+                        "position":  4,
+                        "handle":  "sayuw",
+                        "aliases":  null,
+                        "name":  null,
+                        "country":  "Russia"
+                    },
+                    {
+                        "team_id":  "huligani",
+                        "team_name":  "HULIGANI",
+                        "is_chinese_team":  false,
+                        "position":  5,
+                        "handle":  "RESPECT",
+                        "aliases":  null,
+                        "name":  null,
+                        "country":  "Belarus"
+                    },
+                    {
+                        "team_id":  "team-resilience",
+                        "team_name":  "Team Resilience",
+                        "is_chinese_team":  true,
+                        "position":  1,
+                        "handle":  "YSR-04E",
+                        "aliases":  null,
+                        "name":  "Yang Shaohan",
+                        "country":  "China"
+                    },
+                    {
+                        "team_id":  "team-resilience",
+                        "team_name":  "Team Resilience",
+                        "is_chinese_team":  true,
+                        "position":  2,
+                        "handle":  "Echozz",
+                        "aliases":  [
+                                        "Echo"
+                                    ],
+                        "name":  "Xu Ziliang",
+                        "country":  "China"
+                    },
+                    {
+                        "team_id":  "team-resilience",
+                        "team_name":  "Team Resilience",
+                        "is_chinese_team":  true,
+                        "position":  3,
+                        "handle":  "niu",
+                        "aliases":  null,
+                        "name":  "Li Kongbo",
+                        "country":  "China"
+                    },
+                    {
+                        "team_id":  "team-resilience",
+                        "team_name":  "Team Resilience",
+                        "is_chinese_team":  true,
+                        "position":  4,
+                        "handle":  "planet",
+                        "aliases":  [
+                                        "plAnet"
+                                    ],
+                        "name":  "Lin Hao",
+                        "country":  "China"
+                    },
+                    {
+                        "team_id":  "team-resilience",
+                        "team_name":  "Team Resilience",
+                        "is_chinese_team":  true,
+                        "position":  5,
+                        "handle":  "zzq",
+                        "aliases":  null,
+                        "name":  "Zhang Ziqiang",
+                        "country":  "China"
+                    },
+                    {
+                        "team_id":  "vici-gaming",
+                        "team_name":  "Vici Gaming",
+                        "is_chinese_team":  true,
+                        "position":  1,
+                        "handle":  "shiro",
+                        "aliases":  null,
+                        "name":  "Guo Xuanyang",
+                        "country":  "China"
+                    },
+                    {
+                        "team_id":  "vici-gaming",
+                        "team_name":  "Vici Gaming",
+                        "is_chinese_team":  true,
+                        "position":  2,
+                        "handle":  "Xm",
+                        "aliases":  null,
+                        "name":  "Guo Hongcheng",
+                        "country":  "China"
+                    },
+                    {
+                        "team_id":  "vici-gaming",
+                        "team_name":  "Vici Gaming",
+                        "is_chinese_team":  true,
+                        "position":  3,
+                        "handle":  "Bach",
+                        "aliases":  [
+                                        "Faith_bian"
+                                    ],
+                        "name":  "Zhang Ruida",
+                        "country":  "China"
+                    },
+                    {
+                        "team_id":  "vici-gaming",
+                        "team_name":  "Vici Gaming",
+                        "is_chinese_team":  true,
+                        "position":  4,
+                        "handle":  "XinQ",
+                        "aliases":  null,
+                        "name":  "Zhao Zixing",
+                        "country":  "China"
+                    },
+                    {
+                        "team_id":  "vici-gaming",
+                        "team_name":  "Vici Gaming",
+                        "is_chinese_team":  true,
+                        "position":  5,
+                        "handle":  "y`",
+                        "aliases":  null,
+                        "name":  "Zhang Yiping",
+                        "country":  "China"
+                    },
+                    {
+                        "team_id":  "og",
+                        "team_name":  "OG",
+                        "is_chinese_team":  false,
+                        "position":  1,
+                        "handle":  "Natsumi-",
+                        "aliases":  null,
+                        "name":  null,
+                        "country":  "Philippines"
+                    },
+                    {
+                        "team_id":  "og",
+                        "team_name":  "OG",
+                        "is_chinese_team":  false,
+                        "position":  2,
+                        "handle":  "Yopaj-",
+                        "aliases":  null,
+                        "name":  null,
+                        "country":  "Philippines"
+                    },
+                    {
+                        "team_id":  "og",
+                        "team_name":  "OG",
+                        "is_chinese_team":  false,
+                        "position":  3,
+                        "handle":  "Raven^",
+                        "aliases":  null,
+                        "name":  null,
+                        "country":  "Philippines"
+                    },
+                    {
+                        "team_id":  "og",
+                        "team_name":  "OG",
+                        "is_chinese_team":  false,
+                        "position":  4,
+                        "handle":  "TIMS",
+                        "aliases":  null,
+                        "name":  null,
+                        "country":  "Philippines"
+                    },
+                    {
+                        "team_id":  "og",
+                        "team_name":  "OG",
+                        "is_chinese_team":  false,
+                        "position":  5,
+                        "handle":  "skem",
+                        "aliases":  null,
+                        "name":  null,
+                        "country":  "Philippines"
+                    },
+                    {
+                        "team_id":  "gamerlegion",
+                        "team_name":  "GamerLegion",
+                        "is_chinese_team":  false,
+                        "position":  1,
+                        "handle":  "Ghost",
+                        "aliases":  null,
+                        "name":  null,
+                        "country":  "Malaysia"
+                    },
+                    {
+                        "team_id":  "gamerlegion",
+                        "team_name":  "GamerLegion",
+                        "is_chinese_team":  false,
+                        "position":  2,
+                        "handle":  "RCY",
+                        "aliases":  null,
+                        "name":  null,
+                        "country":  "United States"
+                    },
+                    {
+                        "team_id":  "gamerlegion",
+                        "team_name":  "GamerLegion",
+                        "is_chinese_team":  false,
+                        "position":  3,
+                        "handle":  "Fayde",
+                        "aliases":  null,
+                        "name":  null,
+                        "country":  "United States"
+                    },
+                    {
+                        "team_id":  "gamerlegion",
+                        "team_name":  "GamerLegion",
+                        "is_chinese_team":  false,
+                        "position":  4,
+                        "handle":  "Bignum",
+                        "aliases":  null,
+                        "name":  null,
+                        "country":  "Ukraine"
+                    },
+                    {
+                        "team_id":  "gamerlegion",
+                        "team_name":  "GamerLegion",
+                        "is_chinese_team":  false,
+                        "position":  5,
+                        "handle":  "Speeed",
+                        "aliases":  null,
+                        "name":  null,
+                        "country":  "United States"
+                    },
+                    {
+                        "team_id":  "lgd-gaming",
+                        "team_name":  "LGD Gaming",
+                        "is_chinese_team":  false,
+                        "position":  1,
+                        "handle":  "Yuma",
+                        "aliases":  null,
+                        "name":  "Yuma Langlet",
+                        "country":  "Nicaragua"
+                    },
+                    {
+                        "team_id":  "lgd-gaming",
+                        "team_name":  "LGD Gaming",
+                        "is_chinese_team":  false,
+                        "position":  2,
+                        "handle":  "TaiLung",
+                        "aliases":  null,
+                        "name":  "Santiago Olivos Aguero Gustavo",
+                        "country":  "Peru"
+                    },
+                    {
+                        "team_id":  "lgd-gaming",
+                        "team_name":  "LGD Gaming",
+                        "is_chinese_team":  false,
+                        "position":  3,
+                        "handle":  "Wisper",
+                        "aliases":  null,
+                        "name":  "Adrian Cespedes Dobles",
+                        "country":  "Bolivia"
+                    },
+                    {
+                        "team_id":  "lgd-gaming",
+                        "team_name":  "LGD Gaming",
+                        "is_chinese_team":  false,
+                        "position":  4,
+                        "handle":  "Thiolicor",
+                        "aliases":  null,
+                        "name":  "Thiago Cordeiro",
+                        "country":  "Brazil"
+                    },
+                    {
+                        "team_id":  "lgd-gaming",
+                        "team_name":  "LGD Gaming",
+                        "is_chinese_team":  false,
+                        "position":  5,
+                        "handle":  "KJ",
+                        "aliases":  null,
+                        "name":  "Matheus Santos Jungles Diniz",
+                        "country":  "Brazil"
+                    }
+                ]
+}
