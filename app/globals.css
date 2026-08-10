@@ -305,10 +305,8 @@ button:hover, .file-button:hover { transform: translateY(-1px); border-color: rg
 .team-title-line { display: flex; align-items: center; gap: 9px; min-width: 0; }
 .team-title-line.right { justify-content: flex-end; }
 .team-block strong { display: block; font-size: 21px; overflow-wrap: anywhere; color: #fff3d8; }
-.team-block span:not(.mini-crest):not(.side-label) { color: var(--muted); font-size: 13px; }
+.team-block > span { color: var(--muted); font-size: 13px; }
 .align-right { text-align: right; }
-.side-label { display: block; color: var(--gold-soft); font-size: 10px; font-weight: 950; text-transform: uppercase; margin-bottom: 6px; }
-.side-label.dire { color: #ffb2ad; }
 .mini-crest {
   min-width: 36px;
   width: 36px;
