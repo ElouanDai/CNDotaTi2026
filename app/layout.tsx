@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TI2026 中国队对冲投注台",
-  description: "本地保存的 Dota 2 TI2026 赛程、赔率、下注与结算助手。",
+  title: "CN Aegis Hedge Room | TI2026",
+  description: "以 Xtreme Gaming 与中国队为核心的 TI2026 本地对冲投注建议台。",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -24,3 +24,5 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     </html>
   );
 }
+
+

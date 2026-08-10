@@ -153,6 +153,17 @@ function parseImportLine(line: string, selectedDate: string): MatchDraft | null 
 function sortMatches(a: Match, b: Match) { return `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`, "zh-CN"); }
 function strategyLabel(strategy: BetStrategy) { return { "hedge-cn": "中国队对冲", "cn-derby": "中国内战", "foreign-edge": "外战回补", manual: "手动" }[strategy]; }
 function statusLabel(status: BetStatus) { return { open: "未结算", won: "赢", lost: "输", void: "走水" }[status]; }
+function teamInitials(name: string) {
+  const normalized = normalizeName(name);
+  if (normalized.includes("xtreme")) return "XG";
+  if (normalized.includes("vici")) return "VG";
+  if (normalized.includes("resilience")) return "TR";
+  if (normalized.includes("liquid")) return "TL";
+  if (normalized.includes("falcons")) return "FLC";
+  if (normalized.includes("betboom") || normalized.includes("boomboys")) return "BB";
+  const initials = name.split(/\s+/).filter(Boolean).map((part) => part[0]).join("");
+  return (initials || name.slice(0, 2)).slice(0, 3).toUpperCase();
+}
 
 export default function Home() {
   const [state, setState] = useState<AppState>(DEFAULT_STATE);
@@ -187,6 +198,12 @@ export default function Home() {
   const dayRecommendedTotal = dayMatches.reduce((sum, match) => { const rec = recommendations.get(match.id); return sum + (rec?.action === "bet" ? rec.stake : 0); }, 0);
   const openBets = state.bets.filter((bet) => bet.status === "open");
   const settledBets = state.bets.filter((bet) => bet.status !== "open");
+  const chinaTeams = state.teams.filter((team) => team.china);
+  const xgTeam = state.teams.find((team) => normalizeName(team.name).includes("xtreme"));
+  const selectedDay = TOURNAMENT_DAYS.find((day) => day.date === state.selectedDate);
+  const chinaOpenBets = openBets.filter((bet) => chinaTeams.some((team) => normalizeName(team.name) === normalizeName(bet.team)));
+  const hedgeOpenBets = openBets.filter((bet) => bet.strategy === "hedge-cn");
+  const xgInPlay = dayMatches.some((match) => [match.teamA, match.teamB].some((team) => normalizeName(team).includes("xtreme")));
 
   function updateState(updater: (current: AppState) => AppState) { setState((current) => updater(current)); }
   function addMatchFromDraft(draft: MatchDraft) { const oddsA = coercePositiveNumber(draft.oddsA); const oddsB = coercePositiveNumber(draft.oddsB); if (!draft.teamA.trim() || !draft.teamB.trim() || oddsA <= 1 || oddsB <= 1) return false; const match: Match = { id: makeId("match"), date: normalizeDateInput(draft.date || state.selectedDate), time: draft.time.trim() || "待定", stage: draft.stage.trim() || "赛程", teamA: draft.teamA.trim(), teamB: draft.teamB.trim(), oddsA, oddsB, status: "scheduled", note: draft.note.trim() }; updateState((current) => ({ ...current, selectedDate: match.date, matches: [...current.matches, match].sort(sortMatches) })); return true; }
@@ -209,37 +226,56 @@ export default function Home() {
   return (
     <main className="app-shell">
       <section className="top-band">
-        <div className="top-inner">
-          <div className="brand-line">
-            <div className="brand-mark">TI</div>
-            <div><p className="eyebrow">The International 2026</p><h1>中国队对冲投注台</h1></div>
+        <div className="stage-atmosphere" aria-hidden="true" />
+        <div className="top-inner hero-grid">
+          <div className="hero-copy">
+            <div className="event-kicker"><span className="rune-dot">◆</span> DOTA 2 · THE INTERNATIONAL 2026 · SHANGHAI</div>
+            <h1>CN Aegis Hedge Room</h1>
+            <p className="hero-subtitle">围绕 Xtreme Gaming 与中国赛区目标管理情绪对冲：赛程、赔率、建议和结算集中在一个本地战情台。</p>
+            <div className="hero-badges" aria-label="重点战队">
+              <div className="xg-crest" title="Xtreme Gaming focus"><span>XG</span><small>CN CORE</small></div>
+              <div className="cn-crest"><span>CN</span><small>{chinaTeams.length} TEAMS</small></div>
+              <div className="ti-crest"><span>TI</span><small>{selectedDay?.stage ?? "本地策略"}</small></div>
+            </div>
           </div>
-          <div className="source-note">基线：上海，16 队，8/13-8/23；8/12 可提前录入赔率</div>
-        </div>
-        <div className="stats-grid top-inner">
-          <div className="stat-tile emphasis"><span>当前资金</span><strong>{money(metrics.bankroll)}</strong></div>
-          <div className="stat-tile"><span>可用余额</span><strong>{money(metrics.available)}</strong></div>
-          <div className="stat-tile"><span>未结算敞口</span><strong>{money(metrics.pending)}</strong></div>
-          <div className="stat-tile"><span>已结算盈亏</span><strong className={metrics.settled >= 0 ? "positive" : "negative"}>{money(metrics.settled)}</strong></div>
-          <div className="stat-tile"><span>战绩</span><strong>{metrics.won}-{metrics.lost}</strong></div>
+          <div className="aegis-showcase" aria-label="TI2026 官方神盾视觉">
+            <div className="aegis-art" role="img" aria-label="TI2026 Aegis official visual" />
+            <div className="showcase-overlay">
+              <span>THE AEGIS IN SHANGHAI</span>
+              <strong>{xgInPlay ? "XG 今日出战" : "等待当日赛程"}</strong>
+            </div>
+          </div>
+          <div className="command-panel" aria-label="资金总览">
+            <div className="panel-title"><span>COMMAND STACK</span><strong>{state.selectedDate}</strong></div>
+            <div className="stats-grid compact-stats">
+              <div className="stat-tile emphasis"><span>当前资金</span><strong>{money(metrics.bankroll)}</strong></div>
+              <div className="stat-tile"><span>可用余额</span><strong>{money(metrics.available)}</strong></div>
+              <div className="stat-tile"><span>未结算敞口</span><strong>{money(metrics.pending)}</strong></div>
+              <div className="stat-tile"><span>今日建议</span><strong>{money(dayRecommendedTotal)}</strong></div>
+              <div className="stat-tile"><span>已结算盈亏</span><strong className={metrics.settled >= 0 ? "positive" : "negative"}>{money(metrics.settled)}</strong></div>
+              <div className="stat-tile"><span>战绩</span><strong>{metrics.won}-{metrics.lost}</strong></div>
+            </div>
+          </div>
         </div>
       </section>
 
       <section className="control-band">
-        <div className="control-grid">
-          <label className="field compact"><span>初始资金</span><input type="number" min="0" step="0.01" value={state.initialBankroll} onChange={(event) => updateState((current) => ({ ...current, initialBankroll: coercePositiveNumber(event.target.value) }))} /></label>
-          <label className="field compact"><span>操作日期</span><input type="date" value={state.selectedDate} onChange={(event) => updateState((current) => ({ ...current, selectedDate: event.target.value }))} /></label>
-          <div className="segmented" aria-label="风险档位">
-            {(Object.keys(RISK_CONFIG) as RiskLevel[]).map((risk) => <button key={risk} type="button" className={state.risk === risk ? "active" : ""} onClick={() => updateState((current) => ({ ...current, risk }))}>{RISK_CONFIG[risk].label}</button>)}
+        <div className="control-frame">
+          <div className="control-grid">
+            <label className="field compact"><span>初始资金</span><input type="number" min="0" step="0.01" value={state.initialBankroll} onChange={(event) => updateState((current) => ({ ...current, initialBankroll: coercePositiveNumber(event.target.value) }))} /></label>
+            <label className="field compact"><span>操作日期</span><input type="date" value={state.selectedDate} onChange={(event) => updateState((current) => ({ ...current, selectedDate: event.target.value }))} /></label>
+            <div className="segmented" aria-label="风险档位">
+              {(Object.keys(RISK_CONFIG) as RiskLevel[]).map((risk) => <button key={risk} type="button" className={state.risk === risk ? "active" : ""} onClick={() => updateState((current) => ({ ...current, risk }))}>{RISK_CONFIG[risk].label}</button>)}
+            </div>
+            <div className="backup-actions">
+              <button type="button" className="secondary" onClick={exportBackup}>导出备份</button>
+              <label className="file-button">导入备份<input type="file" accept="application/json" onChange={importBackup} /></label>
+              <button type="button" className="danger ghost" onClick={resetAll}>清空</button>
+            </div>
           </div>
-          <div className="backup-actions">
-            <button type="button" className="secondary" onClick={exportBackup}>导出备份</button>
-            <label className="file-button">导入备份<input type="file" accept="application/json" onChange={importBackup} /></label>
-            <button type="button" className="danger ghost" onClick={resetAll}>清空</button>
+          <div className="day-strip">
+            {TOURNAMENT_DAYS.map((day) => <button key={day.date} type="button" className={state.selectedDate === day.date ? "selected" : ""} onClick={() => updateState((current) => ({ ...current, selectedDate: day.date }))}><span>{day.label}</span><small>{day.date.slice(5)}</small></button>)}
           </div>
-        </div>
-        <div className="day-strip">
-          {TOURNAMENT_DAYS.map((day) => <button key={day.date} type="button" className={state.selectedDate === day.date ? "selected" : ""} onClick={() => updateState((current) => ({ ...current, selectedDate: day.date }))}><span>{day.label}</span><small>{day.date.slice(5)}</small></button>)}
         </div>
       </section>
 
@@ -278,13 +314,21 @@ export default function Home() {
               const teamA = getTeam(state, match.teamA);
               const teamB = getTeam(state, match.teamB);
               return (
-                <article className="match-card" key={match.id}>
+                <article className={`match-card ${teamA.china || teamB.china ? "cn-match" : ""} ${[match.teamA, match.teamB].some((team) => normalizeName(team).includes("xtreme")) ? "xg-match" : ""}`} key={match.id}>
                   <div className="match-main">
                     <div className="match-meta"><span>{match.time}</span><span>{match.stage}</span><span className={match.status === "scheduled" ? "status open" : "status closed"}>{match.status === "scheduled" ? "未结算" : match.status === "void" ? "走水" : "已结算"}</span></div>
                     <div className="teams-row">
-                      <div className="team-block"><strong>{match.teamA}</strong><span>{teamA.china ? "中国队" : teamA.region} · 强度 {teamA.strength}</span></div>
-                      <div className="versus">VS</div>
-                      <div className="team-block align-right"><strong>{match.teamB}</strong><span>{teamB.china ? "中国队" : teamB.region} · 强度 {teamB.strength}</span></div>
+                      <div className={`team-block ${teamA.china ? "china-side" : ""}`}>
+                        <span className="side-label radiant">Radiant</span>
+                        <div className="team-title-line"><span className="mini-crest">{teamInitials(match.teamA)}</span><strong>{match.teamA}</strong></div>
+                        <span>{teamA.china ? "中国队" : teamA.region} · 强度 {teamA.strength}</span>
+                      </div>
+                      <div className="versus"><span>VS</span><small>BO3</small></div>
+                      <div className={`team-block align-right ${teamB.china ? "china-side" : ""}`}>
+                        <span className="side-label dire">Dire</span>
+                        <div className="team-title-line right"><strong>{match.teamB}</strong><span className="mini-crest">{teamInitials(match.teamB)}</span></div>
+                        <span>{teamB.china ? "中国队" : teamB.region} · 强度 {teamB.strength}</span>
+                      </div>
                     </div>
                     {match.note ? <p className="match-note">{match.note}</p> : null}
                     <div className="odds-grid">
@@ -314,13 +358,31 @@ export default function Home() {
         </div>
 
         <aside className="side-column">
+          <section className="tool-panel compact-panel xg-focus-panel">
+            <div className="xg-panel-head">
+              <div className="xg-crest large"><span>XG</span><small>XTREME</small></div>
+              <div>
+                <p className="eyebrow">CN PRIORITY</p>
+                <h2>Xtreme Gaming</h2>
+                <span>{xgTeam ? `模型强度 ${xgTeam.strength}` : "等待队伍资料"}</span>
+              </div>
+            </div>
+            <div className="focus-meter"><span style={{ width: `${xgTeam ? xgTeam.strength : 88}%` }} /></div>
+            <div className="focus-grid">
+              <div><span>今日状态</span><strong>{xgInPlay ? "出战" : "未排入"}</strong></div>
+              <div><span>CN 队伍</span><strong>{chinaTeams.length}</strong></div>
+              <div><span>对冲单</span><strong>{hedgeOpenBets.length}</strong></div>
+              <div><span>误押 CN</span><strong>{chinaOpenBets.length}</strong></div>
+            </div>
+          </section>
+
           <section className="tool-panel compact-panel">
             <div className="section-heading small"><h2>资金纪律</h2></div>
-            <div className="discipline-list"><div><span>风险档位</span><strong>{RISK_CONFIG[state.risk].description}</strong></div><div><span>今日上限</span><strong>{money(metrics.bankroll * RISK_CONFIG[state.risk].dailyCap)}</strong></div><div><span>剩余可用</span><strong>{money(metrics.available)}</strong></div><div><span>中国队识别</span><strong>{state.teams.filter((team) => team.china).map((team) => team.name).join("、")}</strong></div></div>
+            <div className="discipline-list"><div><span>风险档位</span><strong>{RISK_CONFIG[state.risk].description}</strong></div><div><span>今日上限</span><strong>{money(metrics.bankroll * RISK_CONFIG[state.risk].dailyCap)}</strong></div><div><span>剩余可用</span><strong>{money(metrics.available)}</strong></div><div><span>中国队识别</span><strong>{chinaTeams.map((team) => team.name).join("、")}</strong></div></div>
           </section>
-          <section className="tool-panel compact-panel">
+          <section className="tool-panel compact-panel rune-panel">
             <div className="section-heading small"><h2>未结算投注</h2><span>{openBets.length} 笔</span></div>
-            <div className="side-list">{openBets.length === 0 ? <p className="muted">暂无未结算投注。</p> : openBets.map((bet) => <div className="side-item" key={bet.id}><strong>{bet.team}</strong><span>{strategyLabel(bet.strategy)} · {money(bet.stake)} @ {bet.odds.toFixed(2)}</span></div>)}</div>
+            <div className="side-list">{openBets.length === 0 ? <p className="muted">暂无未结算投注。</p> : openBets.map((bet) => <div className={`side-item ${bet.strategy === "hedge-cn" ? "hedge-item" : ""}`} key={bet.id}><strong>{bet.team}</strong><span>{strategyLabel(bet.strategy)} · {money(bet.stake)} @ {bet.odds.toFixed(2)}</span></div>)}</div>
           </section>
           <section className="tool-panel compact-panel">
             <div className="section-heading small"><h2>结算记录</h2><span>{settledBets.length} 笔</span></div>
@@ -330,11 +392,12 @@ export default function Home() {
       </section>
 
       <section className="team-section">
-        <div className="section-heading"><div><p className="eyebrow">Editable model</p><h2>战队评级</h2></div><p className="muted">强度越高，模型越倾向该队；中国队开关会改变对冲方向。</p></div>
+        <div className="section-heading team-heading"><div><p className="eyebrow">Editable model</p><h2>战队评级 / CN Watch</h2></div><p className="muted">强度越高，模型越倾向该队；中国队和 XG 会影响对冲方向与视觉优先级。</p></div>
         <div className="team-grid">
-          {state.teams.map((team) => <div className="team-row" key={team.id}><div><strong>{team.name}</strong><span>{team.region} · {team.seed}</span></div><label className="toggle-line"><input type="checkbox" checked={team.china} onChange={(event) => updateTeam(team.id, { china: event.target.checked })} />中国队</label><label className="strength-line"><span>{team.strength}</span><input type="range" min="45" max="95" value={team.strength} onChange={(event) => updateTeam(team.id, { strength: Number(event.target.value) })} /></label></div>)}
+          {state.teams.map((team) => <div className={`team-row ${team.china ? "china-team-row" : ""} ${normalizeName(team.name).includes("xtreme") ? "xg-team-row" : ""}`} key={team.id}><div className="team-identity"><span className="mini-crest">{teamInitials(team.name)}</span><div><strong>{team.name}</strong><span>{team.region} · {team.seed}</span></div></div><label className="toggle-line"><input type="checkbox" checked={team.china} onChange={(event) => updateTeam(team.id, { china: event.target.checked })} />中国队</label><label className="strength-line"><span>{team.strength}</span><input type="range" min="45" max="95" value={team.strength} onChange={(event) => updateTeam(team.id, { strength: Number(event.target.value) })} /></label></div>)}
         </div>
         <div className="add-team-row">
+
           <input placeholder="新战队" value={newTeam.name} onChange={(event) => setNewTeam((draft) => ({ ...draft, name: event.target.value }))} />
           <input placeholder="赛区" value={newTeam.region} onChange={(event) => setNewTeam((draft) => ({ ...draft, region: event.target.value }))} />
           <label><span>{newTeam.strength}</span><input type="range" min="45" max="95" value={newTeam.strength} onChange={(event) => setNewTeam((draft) => ({ ...draft, strength: Number(event.target.value) }))} /></label>
@@ -345,5 +408,13 @@ export default function Home() {
     </main>
   );
 }
+
+
+
+
+
+
+
+
 
 
