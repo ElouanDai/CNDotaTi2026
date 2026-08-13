@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "26-08-14-01",
+  "event": "The International 2026",
+  "operation_date": "2026-08-14",
+  "captured_at_local": "2026-08-14T01:22:00+08:00",
+  "extracted_at": "2026-08-14T01:46:33+08:00",
+  "source_image": "data/input/26-08-14-01.jpg",
+  "bookmaker_hint": "kaiyun.com",
+  "market_used": "全局获胜",
+  "ignored_markets": [
+    "地图让分",
+    "地图总数"
+  ],
+  "extraction_note": "Only the 全局获胜 decimal-odds column was used. Handicap and map-total odds were ignored. HULIGANI vs Vici Gaming appeared twice in the screenshot; the match was recorded once.",
+  "matches": [
+    {
+      "team_a": "Team Yandex",
+      "team_b": "Team Liquid",
+      "odds_a": 1.622,
+      "odds_b": 2.292
+    },
+    {
+      "team_a": "Team Spirit",
+      "team_b": "Aurora Gaming",
+      "odds_a": 1.724,
+      "odds_b": 2.115
+    },
+    {
+      "team_a": "Iron Wing",
+      "team_b": "Team Falcons",
+      "odds_a": 2.59,
+      "odds_b": 1.5
+    },
+    {
+      "team_a": "BoomBoys",
+      "team_b": "TEAM VISION",
+      "odds_a": 2.955,
+      "odds_b": 1.4
+    },
+    {
+      "team_a": "Xtreme Gaming",
+      "team_b": "GamerLegion",
+      "odds_a": 1.299,
+      "odds_b": 3.531
+    },
+    {
+      "team_a": "HULIGANI",
+      "team_b": "Vici Gaming",
+      "odds_a": 4.094,
+      "odds_b": 1.236
+    },
+    {
+      "team_a": "Team Resilience",
+      "team_b": "OG",
+      "odds_a": 2.122,
+      "odds_b": 1.72
+    },
+    {
+      "team_a": "LGD Gaming",
+      "team_b": "Nigma Galaxy",
+      "odds_a": 1.9,
+      "odds_b": 1.9
+    }
+  ]
+}
