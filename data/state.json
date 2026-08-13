@@ -1,19 +1,23 @@
-﻿{
+{
   "schema_version": 1,
   "event": "The International 2026",
   "currency": "CNY",
   "initial_bankroll": 981.42,
-  "current_bankroll": 981.42,
-  "pending_exposure": 88,
+  "current_bankroll": 1011.92,
+  "pending_exposure": 0,
   "strategy": {
     "primary_goal": "Support Chinese teams winning TI2026 emotionally; hedge financially by betting against Chinese teams when appropriate.",
     "advice_only": true,
     "default_risk_level": "standard",
     "daily_cap_fraction": 0.15,
     "single_match_cap_fraction": 0.055,
-    "china_team_ids": ["xtreme-gaming", "team-resilience", "vici-gaming"],
+    "china_team_ids": [
+      "xtreme-gaming",
+      "team-resilience",
+      "vici-gaming"
+    ],
     "lgd_gaming_policy": "LGD Gaming is a Chinese organization with a South American roster; do not treat as a Chinese team for hedge rules unless user explicitly overrides."
   },
-  "last_settlement_date": null,
-  "updated_at": "2026-08-11"
+  "last_settlement_date": "2026-08-13",
+  "updated_at": "2026-08-13"
 }

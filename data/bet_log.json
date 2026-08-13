@@ -15,11 +15,14 @@
       "side": "A",
       "odds": 1.45,
       "stake": 16,
-      "status": "open",
+      "status": "won",
       "strategy": "foreign-edge",
       "placed_at": "2026-08-11",
       "source": "User confirmed all 2026-08-13 recommendations were manually placed.",
-      "notes": "外战模型优势明显，可小额回补资金。"
+      "notes": "外战模型优势明显，可小额回补资金。",
+      "settled_at": "2026-08-13T19:33:46+08:00",
+      "official_match_id": 3367882,
+      "official_score": "2:0"
     },
     {
       "id": "bet-2026-08-13-r1-003-boomboys",
@@ -33,11 +36,14 @@
       "side": "A",
       "odds": 1.3,
       "stake": 11,
-      "status": "open",
+      "status": "won",
       "strategy": "foreign-edge",
       "placed_at": "2026-08-11",
       "source": "User confirmed all 2026-08-13 recommendations were manually placed.",
-      "notes": "外战模型优势明显，可小额回补资金。"
+      "notes": "外战模型优势明显，可小额回补资金。",
+      "settled_at": "2026-08-13T19:33:46+08:00",
+      "official_match_id": 3367883,
+      "official_score": "2:0"
     },
     {
       "id": "bet-2026-08-13-r1-005-team-spirit",
@@ -51,11 +57,14 @@
       "side": "A",
       "odds": 1.4,
       "stake": 17,
-      "status": "open",
+      "status": "won",
       "strategy": "hedge-cn",
       "placed_at": "2026-08-11",
       "source": "User confirmed all 2026-08-13 recommendations were manually placed.",
-      "notes": "对 Xtreme Gaming 的小额情绪对冲。"
+      "notes": "对 Xtreme Gaming 的小额情绪对冲。",
+      "settled_at": "2026-08-13T19:33:46+08:00",
+      "official_match_id": 3367885,
+      "official_score": "2:0"
     },
     {
       "id": "bet-2026-08-13-r1-006-team-liquid",
@@ -69,12 +78,88 @@
       "side": "A",
       "odds": 1.3,
       "stake": 44,
-      "status": "open",
+      "status": "won",
       "strategy": "hedge-cn",
       "placed_at": "2026-08-11",
       "source": "User confirmed all 2026-08-13 recommendations were manually placed.",
-      "notes": "对 Vici Gaming 的主要对冲。"
+      "notes": "对 Vici Gaming 的主要对冲。",
+      "settled_at": "2026-08-13T19:33:46+08:00",
+      "official_match_id": 3367886,
+      "official_score": "2:0"
     }
   ],
-  "settlements": []
+  "settlements": [
+    {
+      "bet_id": "bet-2026-08-13-r1-002-iron-wing",
+      "match_id": "ti2026-2026-08-13-r1-002",
+      "official_match_id": 3367882,
+      "date": "2026-08-13",
+      "time": "10:00",
+      "team": "Iron Wing",
+      "opponent": "Nigma Galaxy",
+      "side": "A",
+      "odds": 1.45,
+      "stake": 16,
+      "result": "won",
+      "score": "2:0",
+      "profit": 7.2,
+      "payout": 23.2,
+      "settled_at": "2026-08-13T19:33:46+08:00",
+      "source": "https://www.dota2.com.cn/international2026/getMatchScheduleGrouped?schedule_key=ti2026&swiss_format=ti_road"
+    },
+    {
+      "bet_id": "bet-2026-08-13-r1-003-boomboys",
+      "match_id": "ti2026-2026-08-13-r1-003",
+      "official_match_id": 3367883,
+      "date": "2026-08-13",
+      "time": "10:00",
+      "team": "BoomBoys",
+      "opponent": "OG",
+      "side": "A",
+      "odds": 1.3,
+      "stake": 11,
+      "result": "won",
+      "score": "2:0",
+      "profit": 3.3,
+      "payout": 14.3,
+      "settled_at": "2026-08-13T19:33:46+08:00",
+      "source": "https://www.dota2.com.cn/international2026/getMatchScheduleGrouped?schedule_key=ti2026&swiss_format=ti_road"
+    },
+    {
+      "bet_id": "bet-2026-08-13-r1-005-team-spirit",
+      "match_id": "ti2026-2026-08-13-r1-005",
+      "official_match_id": 3367885,
+      "date": "2026-08-13",
+      "time": "13:00",
+      "team": "Team Spirit",
+      "opponent": "Xtreme Gaming",
+      "side": "A",
+      "odds": 1.4,
+      "stake": 17,
+      "result": "won",
+      "score": "2:0",
+      "profit": 6.8,
+      "payout": 23.8,
+      "settled_at": "2026-08-13T19:33:46+08:00",
+      "source": "https://www.dota2.com.cn/international2026/getMatchScheduleGrouped?schedule_key=ti2026&swiss_format=ti_road"
+    },
+    {
+      "bet_id": "bet-2026-08-13-r1-006-team-liquid",
+      "match_id": "ti2026-2026-08-13-r1-006",
+      "official_match_id": 3367886,
+      "date": "2026-08-13",
+      "time": "13:00",
+      "team": "Team Liquid",
+      "opponent": "Vici Gaming",
+      "side": "A",
+      "odds": 1.3,
+      "stake": 44,
+      "result": "won",
+      "score": "2:0",
+      "profit": 13.2,
+      "payout": 57.2,
+      "settled_at": "2026-08-13T19:33:46+08:00",
+      "source": "https://www.dota2.com.cn/international2026/getMatchScheduleGrouped?schedule_key=ti2026&swiss_format=ti_road"
+    }
+  ]
 }
