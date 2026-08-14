@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "26-08-15-01",
+  "event": "The International 2026",
+  "operation_date": "2026-08-15",
+  "captured_at_local": "2026-08-15T00:10:00+08:00",
+  "extracted_at": "2026-08-15T00:20:03+08:00",
+  "source_image": "data/input/26-08-15-01.jpg",
+  "bookmaker_hint": "kaiyun.com",
+  "market_used": "全局获胜",
+  "ignored_markets": [
+    "地图让分",
+    "地图总数"
+  ],
+  "extraction_note": "Only the 全局获胜 decimal-odds column was used. Handicap and map-total odds were ignored.",
+  "matches": [
+    {
+      "team_a": "OG",
+      "team_b": "HULIGANI",
+      "odds_a": 1.5,
+      "odds_b": 2.59
+    },
+    {
+      "team_a": "TEAM VISION",
+      "team_b": "Team Spirit",
+      "odds_a": 1.519,
+      "odds_b": 2.535
+    },
+    {
+      "team_a": "Iron Wing",
+      "team_b": "Team Liquid",
+      "odds_a": 2.239,
+      "odds_b": 1.65
+    },
+    {
+      "team_a": "Team Resilience",
+      "team_b": "Team Yandex",
+      "odds_a": 5.438,
+      "odds_b": 1.151
+    },
+    {
+      "team_a": "Team Falcons",
+      "team_b": "GamerLegion",
+      "odds_a": 1.1,
+      "odds_b": 6.966
+    },
+    {
+      "team_a": "Nigma Galaxy",
+      "team_b": "Vici Gaming",
+      "odds_a": 1.82,
+      "odds_b": 1.987
+    },
+    {
+      "team_a": "BoomBoys",
+      "team_b": "Aurora Gaming",
+      "odds_a": 1.74,
+      "odds_b": 2.092
+    },
+    {
+      "team_a": "LGD Gaming",
+      "team_b": "Xtreme Gaming",
+      "odds_a": 2.277,
+      "odds_b": 1.63
+    }
+  ]
+}
